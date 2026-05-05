@@ -29,7 +29,7 @@ return {
     config = function()
       require("dap-python").setup("python")
       
-      vim.keymap.set("n", "<F5>", function()
+      vim.keymap.set("n", "<leader>r", function()
         vim.cmd("write")
         local file = vim.fn.expand("%:p")
         vim.opt.splitright = true
