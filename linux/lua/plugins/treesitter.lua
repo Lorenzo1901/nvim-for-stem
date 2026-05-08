@@ -3,21 +3,21 @@
 -- ============================================================================
 
 return {
-  -- Treesitter for syntax highlighting
   {
     "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPost", "BufNewFile" },
+    lazy = false,
     build = ':TSUpdate',
     config = function()
-      require'nvim-treesitter.configs'.setup {
-        ensure_installed = { "lua", "python", "javascript", "html", "css", "latex" },
-        auto_install = false,
-        highlight = { 
-          enable = true,
-	  additional_vim_regex_highlighting = { "latex" },
-        },
-        indent = { enable = true }
-      }
+      require('nvim-treesitter').install({ "lua", "python", "javascript", "html", "css", "latex" })
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { "lua", "python", "javascript", "html", "css", "tex" },
+        callback = function()
+          vim.treesitter.start()
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
     end
   },
 }
+
