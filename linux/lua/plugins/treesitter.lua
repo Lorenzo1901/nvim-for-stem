@@ -10,10 +10,10 @@ return {
     config = function()
       vim.treesitter.language.register("latex", { "tex" })
 
-      require('nvim-treesitter').install({ "lua", "python", "javascript", "html", "css", "latex" })
+      require('nvim-treesitter').install({ "lua", "python", "javascript", "html", "css", "latex", "markdown" }):wait(300000)
 
       vim.api.nvim_create_autocmd('FileType', {
-        pattern = { "lua", "python", "javascript", "html", "css", "tex" },
+        pattern = { "lua", "python", "javascript", "html", "css", "tex", "markdown" },
         callback = function(ev)
           pcall(vim.treesitter.start, ev.buf)
           vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"

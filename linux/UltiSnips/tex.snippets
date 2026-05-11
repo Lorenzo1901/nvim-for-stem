@@ -1,12 +1,35 @@
 global !p
+import vim
+
 def math():
-    if vim.eval('&filetype') == 'tex':
-        return vim.eval('vimtex#syntax#in_mathzone()') != '0'
-    try:
-        node = vim.eval("luaeval('require\"nvim-treesitter.ts_utils\".get_node_at_cursor():type()')")
-        return node in ["inline_formula", "math_environment", "displayed_equation", "latex_block"]
-    except:
-        return False
+    if vim.current.buffer.options['filetype'] == 'tex':
+        if vim.eval('vimtex#syntax#in_mathzone()') == '0':
+            return False
+    else:
+        try:
+            if 'math' not in vim.eval("execute('Inspect')").lower():
+                return False
+        except:
+            return False
+
+    line = vim.current.line
+    
+    depth = 0
+    for i in range(vim.current.window.cursor[1] - 1, -1, -1):
+        char = line[i]
+        if char == '$':
+            return True
+        if char == '}':
+            depth += 1
+        elif char == '{':
+            if depth == 0:
+                if i >= 5 and line[i-5:i] == '\\text':
+                    return False
+                if i >= 7 and (line[i-7:i] == '\\textbf' or line[i-7:i] == '\\textit'):
+                    return False
+            else:
+                depth -= 1
+    return True
 endglobal
 
 snippet template "Basic template" b
