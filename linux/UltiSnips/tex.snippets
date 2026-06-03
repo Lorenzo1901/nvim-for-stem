@@ -13,9 +13,11 @@ def math():
             return False
 
     line = vim.current.line
-    
+    cursor_byte = vim.current.window.cursor[1]
+    cursor_char = len(line.encode('utf-8')[:cursor_byte].decode('utf-8', 'ignore'))
+
     depth = 0
-    for i in range(vim.current.window.cursor[1] - 1, -1, -1):
+    for i in range(min(cursor_char - 1, len(line) - 1), -1, -1):
         char = line[i]
         if char == '$':
             return True
