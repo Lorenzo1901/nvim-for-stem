@@ -7,9 +7,6 @@
 
 set -e
 
-# Cambia directory a quella dello script (necessario per doppio clic)
-cd "$(dirname "$0")"
-
 echo "Select Language / Scegli la lingua: "
 echo "1) English (Default)"
 echo "2) Italiano"
