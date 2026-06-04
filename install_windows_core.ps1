@@ -1,3 +1,6 @@
+# Rimuove il blocco di sicurezza del file se scaricato da internet
+if ($MyInvocation.MyCommand.Path -and (Test-Path $MyInvocation.MyCommand.Path)) { Unblock-File -Path $MyInvocation.MyCommand.Path -ErrorAction SilentlyContinue }
+
 # ==============================================================================
 # Neovim Configuration Installer for Windows
 # Requirements: Windows 10/11 with Winget installed
@@ -90,7 +93,8 @@ $packages = @(
     @("GNU.Ripgrep", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg")
+    @("Gyan.FFmpeg", "ffmpeg"),
+    @("Zig.Zig", "zig")
 )
 
 Write-Host "`n$MSG_STEP1" -ForegroundColor Yellow

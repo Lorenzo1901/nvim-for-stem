@@ -369,7 +369,7 @@ Quando sei in **modalità matematica**, digitare uno di questi seguiti da uno sp
 
 #### Installazione
 Sono forniti degli script di installazione automatica per tutti i principali sistemi operativi. Installeranno Neovim, Git, Node.js, Python, le distribuzioni LaTeX, i visualizzatori PDF e tutte le dipendenze necessarie, oltre al font **RobotoMono Nerd Font**.
-- **Windows:** Fai clic destro su `install_windows.ps1` e seleziona "Esegui con PowerShell" (oppure eseguilo da terminale). Assicurati di avere `winget` installato (nella maggior parte dei casi è già preinstallato su Windows 10 e 11).
+- **Windows:** Fai doppio clic su `install_windows.bat` per avviare l'installazione. Assicurati di avere `winget` installato (nella maggior parte dei casi è già preinstallato su Windows 10 e 11).
 - **macOS:** Apri un terminale ed esegui `bash install_macos.sh`. Utilizza Homebrew sotto il cofano.
 - **Linux:** Apri un terminale ed esegui `bash install_linux.sh`. Rileva e supporta automaticamente sia `apt` (Ubuntu/Debian) che `pacman` (Arch Linux).
 
