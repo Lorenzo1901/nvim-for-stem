@@ -7,6 +7,9 @@
 
 set -e
 
+# Cambia directory a quella dello script (necessario per doppio clic)
+cd "$(dirname "$0")"
+
 echo "Select Language / Scegli la lingua: "
 echo "1) English (Default)"
 echo "2) Italiano"
@@ -66,6 +69,13 @@ echo ""
 if ! command -v brew &> /dev/null; then
     echo "$MSG_BREW_MISSING"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    
+    # Configura brew nel PATH per far proseguire lo script
+    if [ -x "/opt/homebrew/bin/brew" ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x "/usr/local/bin/brew" ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
 fi
 
 echo "$MSG_SYS_DEP"

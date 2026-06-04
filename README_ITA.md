@@ -370,7 +370,7 @@ Quando sei in **modalità matematica**, digitare uno di questi seguiti da uno sp
 #### Installazione
 Sono forniti degli script di installazione automatica per tutti i principali sistemi operativi. Installeranno Neovim, Git, Node.js, Python, le distribuzioni LaTeX, i visualizzatori PDF e tutte le dipendenze necessarie, oltre al font **RobotoMono Nerd Font**.
 - **Windows:** Fai clic destro su `install_windows.ps1` e seleziona "Esegui con PowerShell" (oppure eseguilo da terminale). Assicurati di avere `winget` installato (nella maggior parte dei casi è già preinstallato su Windows 10 e 11).
-- **macOS:** Apri un terminale ed esegui `bash install_macos.sh`. Utilizza Homebrew sotto il cofano.
+- **macOS:** Fai doppio clic su `install_macos.command` nel Finder per aprire automaticamente il terminale e avviare l'installazione. Utilizza Homebrew sotto il cofano.
 - **Linux:** Apri un terminale ed esegui `bash install_linux.sh`. Rileva e supporta automaticamente sia `apt` (Ubuntu/Debian) che `pacman` (Arch Linux).
 
 > **Importante (Configurazione Font):** L'installer scarica e installa il font *RobotoMono Nerd Font* nel tuo sistema operativo. Tuttavia, poiché Neovim gira all'interno del terminale, per visualizzare correttamente le icone **devi configurare il tuo emulatore di terminale** (Windows Terminal, iTerm2, Kitty, Alacritty, ecc.) affinché utilizzi `RobotoMono Nerd Font` come font predefinito.
