@@ -89,7 +89,12 @@ for cask in mactex skim; do
 done
 
 echo "$MSG_PY_DEP"
-pip3 install --user --break-system-packages pynvim neovim-remote manim || pip3 install --user pynvim neovim-remote manim
+pip3 install --user --break-system-packages pynvim neovim-remote manim black || pip3 install --user pynvim neovim-remote manim black
+
+if command -v npm &> /dev/null; then
+    echo "$MSG_INSTALLING Pyright (LSP)..."
+    npm install -g pyright
+fi
 
 echo ""
 echo "$MSG_FONT_DEP"

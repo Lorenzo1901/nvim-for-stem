@@ -125,7 +125,7 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
 Write-Host "`n$MSG_STEP3" -ForegroundColor Yellow
 # Update pip first
 python -m pip install --upgrade pip | Out-Null
-$pyPackages = @("pynvim", "neovim-remote", "manim")
+$pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     $pipShow = python -m pip show $pyPkg 2>$null
     if ($pipShow) {
@@ -134,6 +134,11 @@ foreach ($pyPkg in $pyPackages) {
         Write-Host "$MSG_INSTALLING $pyPkg..."
         python -m pip install $pyPkg
     }
+}
+
+if (Get-Command npm -ErrorAction SilentlyContinue) {
+    Write-Host "`n$MSG_INSTALLING Pyright (LSP)..." -ForegroundColor Yellow
+    npm install -g pyright
 }
 
 Write-Host "`n$MSG_STEP4" -ForegroundColor Yellow

@@ -77,7 +77,12 @@ if check_cmd pacman; then
     
     echo "$MSG_PY_DEP"
     # pip doesn't reinstall if satisfied, but we can quiet it
-    pip3 install --user --break-system-packages pynvim neovim-remote manim
+    pip3 install --user --break-system-packages pynvim neovim-remote manim black
+
+    if check_cmd npm; then
+        echo "$MSG_INSTALLING Pyright (LSP)..."
+        sudo npm install -g pyright
+    fi
 
 elif check_cmd apt; then
     echo "$MSG_DETECT Debian/Ubuntu (apt)"
@@ -119,7 +124,12 @@ elif check_cmd apt; then
     fi
 
     echo "$MSG_PY_DEP"
-    pip3 install --user --break-system-packages pynvim neovim-remote manim || pip3 install --user pynvim neovim-remote manim
+    pip3 install --user --break-system-packages pynvim neovim-remote manim black || pip3 install --user pynvim neovim-remote manim black
+
+    if check_cmd npm; then
+        echo "$MSG_INSTALLING Pyright (LSP)..."
+        sudo npm install -g pyright
+    fi
 else
     echo "$MSG_UNSUPPORTED"
     echo "neovim git build-essential nodejs npm python3 pip3 ripgrep fzf zathura texlive texlab ffmpeg"
