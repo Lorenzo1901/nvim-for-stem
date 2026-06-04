@@ -66,7 +66,7 @@ echo "========================================"
 echo ""
 echo "$MSG_SYS_DEP"
 if check_cmd pacman; then
-    PACKAGES=(neovim ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-meta ffmpeg)
+    PACKAGES=(neovim ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-meta ffmpeg pkgconf cairo pango)
     for pkg in "${PACKAGES[@]}"; do
         if ask_permission "$MSG_PROMPT $pkg?"; then
             sudo pacman -Rs --noconfirm "$pkg" || true
@@ -76,7 +76,7 @@ if check_cmd pacman; then
         fi
     done
 elif check_cmd apt; then
-    PACKAGES=(neovim ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg)
+    PACKAGES=(neovim ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg pkg-config libcairo2-dev libpango1.0-dev)
     for pkg in "${PACKAGES[@]}"; do
         if ask_permission "$MSG_PROMPT $pkg?"; then
             sudo apt remove -y "$pkg" || true

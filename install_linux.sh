@@ -73,7 +73,7 @@ if check_cmd pacman; then
     echo "$MSG_DETECT Arch Linux (pacman)"
     echo "$MSG_SYS_DEP"
     # pacman --needed automatically skips installed packages efficiently
-    sudo pacman -Sy --needed neovim git base-devel nodejs npm python python-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-meta texlab ffmpeg
+    sudo pacman -Sy --needed neovim git base-devel nodejs npm python python-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-meta texlab ffmpeg pkgconf cairo pango
     
     echo "$MSG_PY_DEP"
     # pip doesn't reinstall if satisfied, but we can quiet it
@@ -95,7 +95,7 @@ elif check_cmd apt; then
     
     # Check individually to avoid running apt install if not needed
     pkgs_to_install=()
-    for pkg in neovim git build-essential nodejs npm python3 python3-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg; do
+    for pkg in neovim git build-essential nodejs npm python3 python3-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg pkg-config libcairo2-dev libpango1.0-dev; do
         cmd="$pkg"
         case "$pkg" in
             build-essential) cmd="gcc" ;;
@@ -104,6 +104,8 @@ elif check_cmd apt; then
             ripgrep) cmd="rg" ;;
             zathura-pdf-mupdf) cmd="zathura" ;;
             texlive-full) cmd="pdflatex" ;;
+            libcairo2-dev) cmd="cairo-gobject-query" ;;
+            libpango1.0-dev) cmd="pango-view" ;;
         esac
         if check_cmd "$cmd"; then
             echo "- $pkg $MSG_ALREADY_INSTALLED"

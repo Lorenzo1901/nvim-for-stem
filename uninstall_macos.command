@@ -62,7 +62,7 @@ echo "========================================"
 
 echo ""
 echo "$MSG_SYS_DEP"
-PACKAGES=(neovim ripgrep fzf texlab ffmpeg)
+PACKAGES=(neovim ripgrep fzf texlab ffmpeg pkg-config cairo pango)
 for pkg in "${PACKAGES[@]}"; do
     if ask_permission "$MSG_PROMPT $pkg (brew)?"; then
         brew uninstall "$pkg" || true
