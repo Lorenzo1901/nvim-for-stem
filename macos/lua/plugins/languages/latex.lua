@@ -1,5 +1,5 @@
 -- ============================================================================
--- LATEX LANGUAGE SUPPORT (with Zathura)
+-- LATEX LANGUAGE SUPPORT (with Skim)
 -- ============================================================================
 
 return {
@@ -8,11 +8,10 @@ return {
     "lervag/vimtex",
     ft = "tex",
     config = function()
-      -- Set the viewer to Zathura.
-      -- Vimtex has built-in support for Zathura, which handles forward
-      -- and backward search automatically, provided Zathura and its
-      -- dependencies (like synctex) are correctly installed.
-      vim.g.vimtex_view_method = 'zathura'
+      -- Set the viewer to Skim.
+      vim.g.vimtex_view_method = 'skim'
+      vim.g.vimtex_view_skim_sync = 1
+      vim.g.vimtex_view_skim_activate = 1
       vim.g.vimtex_syntax_enabled = 1
       -- The auto-save feature from your original config.
       -- This is independent of the PDF viewer.

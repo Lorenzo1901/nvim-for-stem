@@ -145,10 +145,16 @@ foreach ($pyPkg in $pyPackages) {
 
 if (Get-Command npm -ErrorAction SilentlyContinue) {
     if (Get-Command pyright -ErrorAction SilentlyContinue) {
-        Write-Host "- pyright $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
+        Write-Host "- pyright $MSG_SKIPPED" -ForegroundColor DarkGray
     } else {
         Write-Host "`n$MSG_INSTALLING Pyright (LSP)..." -ForegroundColor Yellow
         npm install -g pyright
+    }
+    if (Get-Command tree-sitter -ErrorAction SilentlyContinue) {
+        Write-Host "- tree-sitter $MSG_SKIPPED" -ForegroundColor DarkGray
+    } else {
+        Write-Host "`n$MSG_INSTALLING tree-sitter-cli..." -ForegroundColor Yellow
+        npm install -g tree-sitter-cli
     }
 }
 

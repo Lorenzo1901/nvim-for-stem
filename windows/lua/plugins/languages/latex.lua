@@ -1,5 +1,5 @@
 -- ============================================================================
--- LATEX LANGUAGE SUPPORT (with Zathura)
+-- LATEX LANGUAGE SUPPORT (with SumatraPDF)
 -- ============================================================================
 
 return {
@@ -8,10 +8,7 @@ return {
     "lervag/vimtex",
     ft = "tex",
     config = function()
-      -- Set the viewer to Zathura.
-      -- Vimtex has built-in support for Zathura, which handles forward
-      -- and backward search automatically, provided Zathura and its
-      -- dependencies (like synctex) are correctly installed.
+      -- Set the viewer to SumatraPDF.
       vim.g.vimtex_view_method = 'general'
       vim.g.vimtex_view_general_viewer = 'SumatraPDF.exe'
       vim.g.vimtex_view_general_options = '-reuse-instance @pdf'

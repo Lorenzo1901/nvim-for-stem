@@ -7,6 +7,8 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
 echo "Select Language / Scegli la lingua: "
 echo "1) English (Default)"
 echo "2) Italiano"
@@ -59,11 +61,13 @@ read -p "$MSG_WORK_PROMPT" WORKSPACE_PATH
 WORKSPACE_PATH=${WORKSPACE_PATH:-"~/Documents/uni"}
 WORKSPACE_PATH=${WORKSPACE_PATH%/}
 
-if [ -f "macos/lua/plugins/editor.lua" ]; then
-    sed -i.bak "s|~/Documents/uni|$WORKSPACE_PATH|g" macos/lua/plugins/editor.lua
+if [ -f "$SCRIPT_DIR/macos/lua/plugins/editor.lua" ]; then
+    sed -i.bak "s|~/Documents/uni|$WORKSPACE_PATH|g" "$SCRIPT_DIR/macos/lua/plugins/editor.lua"
+    rm -f "$SCRIPT_DIR/macos/lua/plugins/editor.lua.bak"
 fi
-if [ -f "macos/lua/plugins/ui.lua" ]; then
-    sed -i.bak "s|~/Documents/uni/|$WORKSPACE_PATH/|g" macos/lua/plugins/ui.lua
+if [ -f "$SCRIPT_DIR/macos/lua/plugins/ui.lua" ]; then
+    sed -i.bak "s|~/Documents/uni/|$WORKSPACE_PATH/|g" "$SCRIPT_DIR/macos/lua/plugins/ui.lua"
+    rm -f "$SCRIPT_DIR/macos/lua/plugins/ui.lua.bak"
 fi
 echo ""
 
@@ -108,6 +112,12 @@ if command -v npm &> /dev/null; then
     else
         echo "$MSG_INSTALLING Pyright (LSP)..."
         npm install -g pyright
+    fi
+    if command -v tree-sitter &> /dev/null; then
+        echo "- tree-sitter $MSG_ALREADY_INSTALLED"
+    else
+        echo "$MSG_INSTALLING tree-sitter-cli..."
+        npm install -g tree-sitter-cli
     fi
 fi
 

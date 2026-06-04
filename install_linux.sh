@@ -7,6 +7,8 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+
 echo "Select Language / Scegli la lingua: "
 echo "1) English (Default)"
 echo "2) Italiano"
@@ -59,11 +61,13 @@ read -p "$MSG_WORK_PROMPT" WORKSPACE_PATH
 WORKSPACE_PATH=${WORKSPACE_PATH:-"~/Documents/uni"}
 WORKSPACE_PATH=${WORKSPACE_PATH%/}
 
-if [ -f "linux/lua/plugins/editor.lua" ]; then
-    sed -i.bak "s|~/Documents/uni|$WORKSPACE_PATH|g" linux/lua/plugins/editor.lua
+if [ -f "$SCRIPT_DIR/linux/lua/plugins/editor.lua" ]; then
+    sed -i.bak "s|~/Documents/uni|$WORKSPACE_PATH|g" "$SCRIPT_DIR/linux/lua/plugins/editor.lua"
+    rm -f "$SCRIPT_DIR/linux/lua/plugins/editor.lua.bak"
 fi
-if [ -f "linux/lua/plugins/ui.lua" ]; then
-    sed -i.bak "s|~/Documents/uni/|$WORKSPACE_PATH/|g" linux/lua/plugins/ui.lua
+if [ -f "$SCRIPT_DIR/linux/lua/plugins/ui.lua" ]; then
+    sed -i.bak "s|~/Documents/uni/|$WORKSPACE_PATH/|g" "$SCRIPT_DIR/linux/lua/plugins/ui.lua"
+    rm -f "$SCRIPT_DIR/linux/lua/plugins/ui.lua.bak"
 fi
 echo ""
 
