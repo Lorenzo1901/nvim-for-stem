@@ -204,7 +204,6 @@ Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host $MSG_DONE -ForegroundColor Green
 Write-Host "Assicurati di / Make sure to:"
 Write-Host $MSG_DONE1
-Write-Host $MSG_DONE2
 Write-Host $MSG_DONE3
 Write-Host $MSG_DONE4
 Write-Host "========================================" -ForegroundColor Cyan

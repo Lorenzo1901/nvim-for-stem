@@ -161,9 +161,19 @@ else
     echo "- RobotoMono Nerd Font $MSG_ALREADY_INSTALLED"
 fi
 
+echo ""
+echo "$MSG_COPY_CONFIG"
+mkdir -p "$HOME/.config/nvim"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+if [ -d "$SCRIPT_DIR/linux" ]; then
+    cp -r "$SCRIPT_DIR/linux/"* "$HOME/.config/nvim/"
+    echo "- OK"
+else
+    echo "Warning: 'linux' directory not found. Please copy the configuration manually."
+fi
+
 echo "========================================"
 echo "$MSG_DONE"
-echo "$MSG_COPY"
 echo "$MSG_OPEN"
 echo "$MSG_FONT_REMINDER"
 echo "========================================"
