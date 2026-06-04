@@ -115,12 +115,29 @@ foreach ($pkgPair in $packages) {
 }
 
 Write-Host "`n$MSG_MSVC" -ForegroundColor Yellow
-$vsBuildToolsPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
-if (!(Test-Path $vsBuildToolsPath)) {
+$msvcFound = $false
+$msvcPaths = @(
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\BuildTools\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC",
+    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC"
+)
+foreach ($p in $msvcPaths) {
+    if (Test-Path $p) {
+        $msvcFound = $true
+        break
+    }
+}
+
+if (!$msvcFound) {
     Write-Host $MSG_MSVC_WAIT -ForegroundColor Cyan
     winget install --id Microsoft.VisualStudio.2022.BuildTools --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" -e --accept-package-agreements --accept-source-agreements
 } else {
-    Write-Host "- Visual Studio Build Tools $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
+    Write-Host "- Visual Studio Build Tools / MSVC $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
 }
 
 Write-Host "`n$MSG_STEP2" -ForegroundColor Yellow
