@@ -94,7 +94,6 @@ $packages = @(
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
     @("Gyan.FFmpeg", "ffmpeg"),
-    @("Zig.Zig", "zig"),
     @("LLVM.LLVM", "clang")
 )
 
@@ -135,16 +134,25 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
 }
 
 Write-Host "`n$MSG_STEP3" -ForegroundColor Yellow
-# Update pip first
-python -m pip install --no-cache-dir --upgrade pip | Out-Null
+# Cerchiamo di usare Python 3.11 (se disponibile tramite py launcher) per evitare problemi di compilazione con Python 3.14+
+$pyCmd = "python"
+if (Get-Command py -ErrorAction SilentlyContinue) {
+    $pyCheck = py -3.11 --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $pyCmd = "py -3.11"
+        Write-Host "Trovato Python 3.11, lo utilizzo per pip..." -ForegroundColor Green
+    }
+}
+
+Invoke-Expression "$pyCmd -m pip install --no-cache-dir --upgrade pip | Out-Null"
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
-    $pipShow = python -m pip show $pyPkg 2>$null
+    $pipShow = Invoke-Expression "$pyCmd -m pip show $pyPkg 2>$null"
     if ($pipShow) {
         Write-Host "- $pyPkg $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
     } else {
         Write-Host "$MSG_INSTALLING $pyPkg..."
-        python -m pip install --no-cache-dir $pyPkg
+        Invoke-Expression "$pyCmd -m pip install --no-cache-dir $pyPkg"
     }
 }
 

@@ -56,7 +56,8 @@ $packages = @(
     @("GNU.Ripgrep", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg")
+    @("Gyan.FFmpeg", "ffmpeg"),
+    @("LLVM.LLVM", "clang")
 )
 
 foreach ($pkgPair in $packages) {
@@ -83,10 +84,17 @@ if (Ask-Permission "$MSG_PROMPT texlab?") {
 }
 
 Write-Host "`n$MSG_PIP" -ForegroundColor Yellow
+$pyCmd = "python"
+if (Get-Command py -ErrorAction SilentlyContinue) {
+    $pyCheck = py -3.11 --version 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        $pyCmd = "py -3.11"
+    }
+}
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     if (Ask-Permission "$MSG_PROMPT $pyPkg (pip)?") {
-        python -m pip uninstall -y $pyPkg | Out-Null
+        Invoke-Expression "$pyCmd -m pip uninstall -y $pyPkg | Out-Null"
         Write-Host "- $pyPkg $MSG_REMOVED" -ForegroundColor Green
     } else {
         Write-Host "- $pyPkg $MSG_SKIPPED" -ForegroundColor DarkGray
