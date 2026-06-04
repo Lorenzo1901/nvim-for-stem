@@ -84,17 +84,19 @@ if (Ask-Permission "$MSG_PROMPT texlab?") {
 }
 
 Write-Host "`n$MSG_PIP" -ForegroundColor Yellow
-$pyCmd = "python"
+$pyExe = "python"
+$pyArgs = @()
 if (Get-Command py -ErrorAction SilentlyContinue) {
-    $pyCheck = py -3.11 --version 2>&1
+    py -3.11 --version 2>$null
     if ($LASTEXITCODE -eq 0) {
-        $pyCmd = "py -3.11"
+        $pyExe = "py"
+        $pyArgs = @("-3.11")
     }
 }
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     if (Ask-Permission "$MSG_PROMPT $pyPkg (pip)?") {
-        Invoke-Expression "$pyCmd -m pip uninstall -y $pyPkg | Out-Null"
+        & $pyExe $pyArgs -m pip uninstall -y $pyPkg | Out-Null
         Write-Host "- $pyPkg $MSG_REMOVED" -ForegroundColor Green
     } else {
         Write-Host "- $pyPkg $MSG_SKIPPED" -ForegroundColor DarkGray
