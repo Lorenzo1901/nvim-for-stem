@@ -368,10 +368,12 @@ Quando sei in **modalità matematica**, digitare uno di questi seguiti da uno sp
 ### 9. Guida Rapida
 
 #### Installazione
-Sono forniti degli script di installazione automatica per tutti i principali sistemi operativi. Installeranno Neovim, Git, Node.js, Python, le distribuzioni LaTeX, i visualizzatori PDF e tutte le dipendenze necessarie.
-- **Windows:** Fai clic destro su `install_windows.ps1` e seleziona "Esegui con PowerShell" (oppure eseguilo da terminale). Assicurati di avere `winget` installato.
+Sono forniti degli script di installazione automatica per tutti i principali sistemi operativi. Installeranno Neovim, Git, Node.js, Python, le distribuzioni LaTeX, i visualizzatori PDF e tutte le dipendenze necessarie, oltre al font **RobotoMono Nerd Font**.
+- **Windows:** Fai clic destro su `install_windows.ps1` e seleziona "Esegui con PowerShell" (oppure eseguilo da terminale). Assicurati di avere `winget` installato (nella maggior parte dei casi è già preinstallato su Windows 10 e 11).
 - **macOS:** Apri un terminale ed esegui `bash install_macos.sh`. Utilizza Homebrew sotto il cofano.
 - **Linux:** Apri un terminale ed esegui `bash install_linux.sh`. Rileva e supporta automaticamente sia `apt` (Ubuntu/Debian) che `pacman` (Arch Linux).
+
+> **Importante (Configurazione Font):** L'installer scarica e installa il font *RobotoMono Nerd Font* nel tuo sistema operativo. Tuttavia, poiché Neovim gira all'interno del terminale, per visualizzare correttamente le icone **devi configurare il tuo emulatore di terminale** (Windows Terminal, iTerm2, Kitty, Alacritty, ecc.) affinché utilizzi `RobotoMono Nerd Font` come font predefinito.
 
 Al primo avvio, gli script ti chiederanno dove vuoi configurare la tua cartella di lavoro principale (es. per il file explorer `nvim-tree` e per la ricerca FZF).
 Dopo aver eseguito lo script, copia il contenuto della cartella del rispettivo sistema operativo (`windows`, `macos`, o `linux`) nella tua cartella di configurazione di Neovim:

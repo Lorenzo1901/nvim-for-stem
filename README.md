@@ -368,10 +368,12 @@ When in **math mode**, typing any of these followed by a space or non-alphabet c
 ### 9. Quick Start Guide
 
 #### Installation
-Automated installation scripts are provided for all major operating systems. They will install Neovim, Git, Node.js, Python, LaTeX distributions, PDF viewers, and all necessary dependencies.
-- **Windows:** Right-click `install_windows.ps1` and select "Run with PowerShell" (or execute it from a terminal). Make sure you have `winget` installed.
+Automated installation scripts are provided for all major operating systems. They will install Neovim, Git, Node.js, Python, LaTeX distributions, PDF viewers, and all necessary dependencies. They also install the required **RobotoMono Nerd Font**.
+- **Windows:** Right-click `install_windows.ps1` and select "Run with PowerShell" (or execute it from a terminal). Make sure you have `winget` installed (it is usually pre-installed on modern Windows 10 and 11).
 - **macOS:** Open a terminal and run `bash install_macos.sh`. It uses Homebrew under the hood.
 - **Linux:** Open a terminal and run `bash install_linux.sh`. It automatically detects and supports `apt` (Ubuntu/Debian) and `pacman` (Arch Linux).
+
+> **Important (Font Setup):** The installer downloads and installs the *RobotoMono Nerd Font* on your OS. However, Neovim runs inside your terminal. To see the icons properly, you **must configure your terminal emulator** (Windows Terminal, iTerm2, Kitty, Alacritty, etc.) to use `RobotoMono Nerd Font` as its default font.
 
 After running the script, copy the contents of the respective OS folder (`windows`, `macos`, or `linux`) into your Neovim configuration directory:
 - Windows: `%USERPROFILE%\AppData\Local\nvim\`

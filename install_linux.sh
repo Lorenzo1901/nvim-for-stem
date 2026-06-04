@@ -7,13 +7,53 @@
 
 set -e
 
+echo "Select Language / Scegli la lingua: "
+echo "1) English (Default)"
+echo "2) Italiano"
+read -p "> " LANG_CHOICE
+LANG_CHOICE=${LANG_CHOICE:-1}
+
+if [ "$LANG_CHOICE" = "2" ]; then
+    MSG_TITLE="Configurazione Ambiente Neovim"
+    MSG_WORK_DIR="[Configurazione Cartella di Lavoro]"
+    MSG_WORK_PROMPT="Inserisci il percorso di default per Nvim-Tree e FZF [~/Documents/uni]: "
+    MSG_DETECT="Rilevato"
+    MSG_SYS_DEP="Installazione dipendenze di sistema..."
+    MSG_PY_DEP="Installazione pacchetti Python..."
+    MSG_TEXLAB="Installazione di texlab da GitHub releases..."
+    MSG_UNSUPPORTED="Gestore di pacchetti non supportato. Installa manualmente:"
+    MSG_DONE="Installazione completata! Assicurati di fare queste cose:"
+    MSG_COPY="1. Copiare il contenuto della cartella 'linux' dentro ~/.config/nvim/"
+    MSG_OPEN="2. Aprire Neovim per scaricare i plugin via lazy.nvim."
+    MSG_FONT_REMINDER="3. Impostare il font del terminale su 'RobotoMono Nerd Font'."
+    MSG_ALREADY_INSTALLED="già installato, salto."
+    MSG_INSTALLING="Installazione di"
+    MSG_FONT_DEP="Installazione Roboto Mono Nerd Font..."
+else
+    MSG_TITLE="Neovim Environment Setup"
+    MSG_WORK_DIR="[Workspace Directory Configuration]"
+    MSG_WORK_PROMPT="Enter default path for Nvim-Tree and FZF [~/Documents/uni]: "
+    MSG_DETECT="Detected"
+    MSG_SYS_DEP="Installing system dependencies..."
+    MSG_PY_DEP="Installing Python packages..."
+    MSG_TEXLAB="Installing texlab from GitHub releases..."
+    MSG_UNSUPPORTED="Unsupported package manager. Please install dependencies manually:"
+    MSG_DONE="Installation complete! Make sure to:"
+    MSG_COPY="1. Copy the 'linux' folder contents to ~/.config/nvim/"
+    MSG_OPEN="2. Open Neovim to let lazy.nvim download all plugins."
+    MSG_FONT_REMINDER="3. Set your terminal font to 'RobotoMono Nerd Font'."
+    MSG_ALREADY_INSTALLED="already installed, skipping."
+    MSG_INSTALLING="Installing"
+    MSG_FONT_DEP="Installing Roboto Mono Nerd Font..."
+fi
+
 echo "========================================"
-echo " Neovim Environment Setup for Linux     "
+echo " $MSG_TITLE "
 echo "========================================"
 
 echo ""
-echo "[Configurazione Cartella di Lavoro]"
-read -p "Inserisci il percorso di default per Nvim-Tree e FZF [~/Documents/uni]: " WORKSPACE_PATH
+echo "$MSG_WORK_DIR"
+read -p "$MSG_WORK_PROMPT" WORKSPACE_PATH
 WORKSPACE_PATH=${WORKSPACE_PATH:-"~/Documents/uni"}
 WORKSPACE_PATH=${WORKSPACE_PATH%/}
 
@@ -25,39 +65,83 @@ if [ -f "linux/lua/plugins/ui.lua" ]; then
 fi
 echo ""
 
-if command -v pacman &> /dev/null; then
-    echo "Detected Arch Linux (pacman)"
-    echo "Installing system dependencies..."
+check_cmd() {
+    command -v "$1" &> /dev/null
+}
+
+if check_cmd pacman; then
+    echo "$MSG_DETECT Arch Linux (pacman)"
+    echo "$MSG_SYS_DEP"
+    # pacman --needed automatically skips installed packages efficiently
     sudo pacman -Sy --needed neovim git base-devel nodejs npm python python-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-meta texlab ffmpeg
     
-    echo "Installing Python packages..."
+    echo "$MSG_PY_DEP"
+    # pip doesn't reinstall if satisfied, but we can quiet it
     pip3 install --user --break-system-packages pynvim neovim-remote manim
 
-elif command -v apt &> /dev/null; then
-    echo "Detected Debian/Ubuntu (apt)"
-    echo "Installing system dependencies..."
+elif check_cmd apt; then
+    echo "$MSG_DETECT Debian/Ubuntu (apt)"
+    echo "$MSG_SYS_DEP"
     sudo apt update
-    sudo apt install -y neovim git build-essential nodejs npm python3 python3-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg
+    
+    # Check individually to avoid running apt install if not needed
+    pkgs_to_install=()
+    for pkg in neovim git build-essential nodejs npm python3 python3-pip ripgrep fzf zathura zathura-pdf-mupdf xdotool texlive-full ffmpeg; do
+        cmd="$pkg"
+        case "$pkg" in
+            build-essential) cmd="gcc" ;;
+            nodejs) cmd="node" ;;
+            python3-pip) cmd="pip3" ;;
+            ripgrep) cmd="rg" ;;
+            zathura-pdf-mupdf) cmd="zathura" ;;
+            texlive-full) cmd="pdflatex" ;;
+        esac
+        if check_cmd "$cmd"; then
+            echo "- $pkg $MSG_ALREADY_INSTALLED"
+        else
+            pkgs_to_install+=("$pkg")
+        fi
+    done
+    
+    if [ ${#pkgs_to_install[@]} -gt 0 ]; then
+        echo "$MSG_INSTALLING: ${pkgs_to_install[*]}"
+        sudo apt install -y "${pkgs_to_install[@]}"
+    fi
 
-    # texlab is often missing from default apt repos in older versions, so we fetch it
-    if ! command -v texlab &> /dev/null; then
-        echo "Installing texlab from GitHub releases..."
+    if ! check_cmd texlab; then
+        echo "$MSG_TEXLAB"
         curl -L -o texlab.tar.gz "https://github.com/latex-lsp/texlab/releases/latest/download/texlab-x86_64-linux.tar.gz"
         tar -xzf texlab.tar.gz
         sudo mv texlab /usr/local/bin/
         rm texlab.tar.gz
+    else
+        echo "- texlab $MSG_ALREADY_INSTALLED"
     fi
 
-    echo "Installing Python packages..."
+    echo "$MSG_PY_DEP"
     pip3 install --user --break-system-packages pynvim neovim-remote manim || pip3 install --user pynvim neovim-remote manim
 else
-    echo "Unsupported package manager. Please install dependencies manually:"
+    echo "$MSG_UNSUPPORTED"
     echo "neovim git build-essential nodejs npm python3 pip3 ripgrep fzf zathura texlive texlab ffmpeg"
     exit 1
 fi
 
+echo ""
+FONT_DIR="$HOME/.local/share/fonts/RobotoMonoNerd"
+if [ ! -d "$FONT_DIR" ]; then
+    echo "$MSG_FONT_DEP"
+    mkdir -p "$FONT_DIR"
+    curl -L -o /tmp/RobotoMono.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/RobotoMono.zip"
+    unzip -q /tmp/RobotoMono.zip -d "$FONT_DIR"
+    fc-cache -fv "$FONT_DIR" &> /dev/null
+    rm /tmp/RobotoMono.zip
+else
+    echo "- RobotoMono Nerd Font $MSG_ALREADY_INSTALLED"
+fi
+
 echo "========================================"
-echo "Installation complete!"
-echo "Make sure to copy the 'linux' folder contents to ~/.config/nvim/"
-echo "Then, open Neovim to let lazy.nvim download all plugins."
+echo "$MSG_DONE"
+echo "$MSG_COPY"
+echo "$MSG_OPEN"
+echo "$MSG_FONT_REMINDER"
 echo "========================================"
