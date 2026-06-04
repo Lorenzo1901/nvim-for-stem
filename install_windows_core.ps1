@@ -94,7 +94,8 @@ $packages = @(
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
     @("Gyan.FFmpeg", "ffmpeg"),
-    @("Zig.Zig", "zig")
+    @("Zig.Zig", "zig"),
+    @("LLVM.LLVM", "clang")
 )
 
 Write-Host "`n$MSG_STEP1" -ForegroundColor Yellow
@@ -135,7 +136,7 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
 
 Write-Host "`n$MSG_STEP3" -ForegroundColor Yellow
 # Update pip first
-python -m pip install --upgrade pip | Out-Null
+python -m pip install --no-cache-dir --upgrade pip | Out-Null
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     $pipShow = python -m pip show $pyPkg 2>$null
@@ -143,7 +144,7 @@ foreach ($pyPkg in $pyPackages) {
         Write-Host "- $pyPkg $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
     } else {
         Write-Host "$MSG_INSTALLING $pyPkg..."
-        python -m pip install $pyPkg
+        python -m pip install --no-cache-dir $pyPkg
     }
 }
 
