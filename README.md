@@ -4,21 +4,7 @@
 
 ## Table of Contents
 
-1. [Overview](#overview)
-
-2. [General Settings](#general-settings)
-
-3. [Key Features](#key-features)
-
-4. [Complete Keymap Reference](#complete-keymap-reference)
-
-5. [Plugin Categories](#plugin-categories)
-
-6. [Language Support](#language-support)
-
-7. [Quick Start Guide](#quick-start-guide)
-
-
+[toc]
 
 ---
 
