@@ -418,3 +418,11 @@ Depending on your OS, edit your configuration in the respective folder:
 - Add new keymaps: `lua/config/keymaps.lua`
 - Modify theme or dashboard: `lua/plugins/ui.lua`
 - Add a new language: `lua/plugins/languages/`
+
+---
+
+### Third-Party Plugin Disclaimer
+
+The MIT license included in this repository applies **only to the configuration files and scripts** written here (e.g., `init.lua`, plugin settings, key mappings, installation scripts, snippets, etc.).
+
+All third-party plugins referenced via the plugin manager (e.g., `lazy.nvim`, `vimtex`, `nvim-cmp`, etc.) are developed and maintained by their respective authors, and are **not included** in this repository nor covered by this license. Please refer to each plugin's own repository and license for their terms of use.

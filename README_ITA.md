@@ -420,3 +420,11 @@ A seconda del tuo sistema operativo, modifica la configurazione nella rispettiva
 - Aggiungere nuove scorciatoie: `lua/config/keymaps.lua`
 - Modificare il tema o la dashboard: `lua/plugins/ui.lua`
 - Aggiungere un nuovo linguaggio: `lua/plugins/languages/`
+
+---
+
+### Disclaimer sui Plugin di Terze Parti
+
+La licenza MIT inclusa in questa repository si applica **esclusivamente ai file di configurazione e agli script** scritti qui (ad es., `init.lua`, impostazioni dei plugin, scorciatoie, script di installazione, snippet, ecc.).
+
+Tutti i plugin di terze parti referenziati tramite il plugin manager (ad es., `lazy.nvim`, `vimtex`, `nvim-cmp`, ecc.) sono sviluppati e mantenuti dai rispettivi autori, e **non sono inclusi** in questa repository né tantomeno coperti da questa licenza. Si prega di fare riferimento alla repository originale e alla licenza specifica di ogni plugin per i relativi termini di utilizzo.
