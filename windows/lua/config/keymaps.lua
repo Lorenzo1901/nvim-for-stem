@@ -26,14 +26,70 @@ vim.keymap.set("n", "<S-Tab>", function()
   vim.api.nvim_set_current_win(prev_win)
 end, { desc = "Focus previous window" })
 
--- Clipboard operations
-vim.keymap.set("i", "<C-v>", '"+p', { noremap = true, silent = true })
-vim.keymap.set("v", "<C-c>", '"+y', { noremap = true, silent = true })
-vim.keymap.set("v", "<C-x>", '"+d', { noremap = true, silent = true })
+-- Visual mode indent mappings (Custom Implementation)
+local function custom_indent()
+    local mode = vim.fn.mode()
+    if mode == 'v' or mode == 'V' or mode == '\22' then vim.cmd('normal! \27') end
+    
+    local r1 = vim.fn.line("'<") - 1
+    local r2 = vim.fn.line("'>") - 1
+    local lines = vim.api.nvim_buf_get_lines(0, r1, r2 + 1, false)
+    local shiftwidth = vim.fn.shiftwidth()
+    local indent_str = vim.bo.expandtab and string.rep(" ", shiftwidth) or "\t"
+    
+    for i, line in ipairs(lines) do
+        lines[i] = indent_str .. line
+    end
+    vim.api.nvim_buf_set_lines(0, r1, r2 + 1, false, lines)
+    
+    vim.api.nvim_win_set_cursor(0, {r1 + 1, 0})
+    vim.cmd('normal! ' .. (mode == '\22' and '\22' or mode))
+    vim.api.nvim_win_set_cursor(0, {r2 + 1, #lines[#lines]})
+end
 
--- Visual mode mappings
-vim.keymap.set('v', '<Tab>', '>gv', { desc = 'Indent' })
-vim.keymap.set('v', '<S-Tab>', '<gv', { desc = 'Unindent' })
+local function custom_unindent()
+    local mode = vim.fn.mode()
+    if mode == 'v' or mode == 'V' or mode == '\22' then vim.cmd('normal! \27') end
+    
+    local r1 = vim.fn.line("'<") - 1
+    local r2 = vim.fn.line("'>") - 1
+    local lines = vim.api.nvim_buf_get_lines(0, r1, r2 + 1, false)
+    local shiftwidth = vim.fn.shiftwidth()
+    local tab_str = "\t"
+    local space_str = string.rep(" ", shiftwidth)
+    
+    for i, line in ipairs(lines) do
+        if vim.startswith(line, space_str) then
+            lines[i] = string.sub(line, #space_str + 1)
+        elseif vim.startswith(line, tab_str) then
+            lines[i] = string.sub(line, 2)
+        else
+            local spaces_removed = 0
+            while spaces_removed < shiftwidth and vim.startswith(lines[i], " ") do
+                lines[i] = string.sub(lines[i], 2)
+                spaces_removed = spaces_removed + 1
+            end
+        end
+    end
+    vim.api.nvim_buf_set_lines(0, r1, r2 + 1, false, lines)
+    
+    vim.api.nvim_win_set_cursor(0, {r1 + 1, 0})
+    vim.cmd('normal! ' .. (mode == '\22' and '\22' or mode))
+    vim.api.nvim_win_set_cursor(0, {r2 + 1, #lines[#lines]})
+end
+
+-- Wrapped in VimEnter to clear UltiSnips and apply our custom Lua logic
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- Only unmap in Visual mode (x). Leave Select mode (s) intact so UltiSnips can jump between placeholders.
+    pcall(vim.cmd, "xunmap <Tab>")
+    pcall(vim.cmd, "xunmap <S-Tab>")
+    
+    -- Map specifically for 'x' (Visual) mode, NOT 'v' (Visual + Select) mode.
+    vim.keymap.set('x', '<Tab>', custom_indent, { desc = 'Custom Indent' })
+    vim.keymap.set('x', '<S-Tab>', custom_unindent, { desc = 'Custom Unindent' })
+  end,
+})
 
 -- Smart wrapping of visual selection
 local function wrap_selection(char)
@@ -107,7 +163,7 @@ vim.keymap.set('v', '[', function() wrap_with_pairs('[', ']') end)
 vim.keymap.set('v', '{', function() wrap_with_pairs('{', '}') end)
 
 -- Spell checking
-vim.api.nvim_set_keymap('i', '<C-l>', '<c-g>u<Esc>[s1z=]a<c-g>u', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('i', '<C-l>', '<c-g>u<Esc>[s1z=`]a<c-g>u', { noremap = true, silent = true })
 
 -- LaTeX formatting
 vim.keymap.set('v', '<M-b>', function() wrap_with_pairs('\\textbf{', '}') end)

@@ -25,7 +25,7 @@ return {
       })
 
       vim.keymap.set("n", "<C-n>", function()
-        require("nvim-tree.api").tree.toggle({ path = "C:\\Users\\Lorenzo\\Desktop\\Uni" })
+        require("nvim-tree.api").tree.toggle({ path = vim.fn.expand("~/Documents/uni") })
       end, { noremap = true, silent = true })
     end,
   },
@@ -103,5 +103,39 @@ return {
       replace_keycodes = false
     })
   end,
+},
+
+	-- Markdown preview
+{
+  "MeanderingProgrammer/render-markdown.nvim",
+  ft = { "markdown" },
+  config = function()
+    require("render-markdown").setup({
+      enable = true,
+      debounce = 50,
+      heading = { enabled = true },
+      code = { enabled = true },
+      latex = { enabled = true },
+      bullet = { enabled = true },
+      quote = { enabled = true },
+    })
+  end,
+},
+
+-- Markdown preview in browser (StackEdit style)
+{
+  "iamcco/markdown-preview.nvim",
+  cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  ft = { "markdown" },
+  build = function() vim.fn["mkdp#util#install"]() end,
+  keys = {
+    { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Toggle Markdown Preview" },
+  },
+  init = function()
+    vim.g.mkdp_filetypes = { "markdown" }
+  end,
 }
+
+
+
 }

@@ -8,9 +8,10 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 -- Install neovim-remote and pynvim if missing
-if not vim.fn.executable("nvr") then
+if vim.fn.executable("nvr") == 0 then
    vim.fn.system("pip3 install --user neovim-remote pynvim")
 end
+
 -- ============================================================================
 -- LOAD CONFIGURATION
 -- ============================================================================

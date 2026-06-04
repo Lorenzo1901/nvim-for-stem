@@ -12,9 +12,8 @@ return {
       -- Vimtex has built-in support for Zathura, which handles forward
       -- and backward search automatically, provided Zathura and its
       -- dependencies (like synctex) are correctly installed.
-      vim.g.vimtex_view_method = 'general'
-      vim.g.vimtex_view_general_viewer = 'SumatraPDF.exe'
-      vim.g.vimtex_view_general_options = '-reuse-instance @pdf'
+      vim.g.vimtex_view_method = 'zathura'
+      vim.g.vimtex_syntax_enabled = 1
       -- The auto-save feature from your original config.
       -- This is independent of the PDF viewer.
       vim.api.nvim_create_augroup("auto_save", { clear = true })

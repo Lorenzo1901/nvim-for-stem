@@ -19,8 +19,8 @@ return {
               args = { "-pdf", "-interaction=nonstopmode", "-synctex=1", "%f" },
             },
             forward_search = {
-              executable = "SumatraPDF",
-              args = { "--synctex-forward", "%l:1:%f", "%p" },
+              executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
+              args = { "-r", "-g", "%l", "%p", "%f" },
             },
           },
         },

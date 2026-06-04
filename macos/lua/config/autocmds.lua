@@ -12,7 +12,6 @@ vim.schedule(function()
     -- LaTeX math delimiters highlighting
     vim.api.nvim_set_hl(0, "TexMathDelimiter", { fg = "#bb70d2" })
     vim.api.nvim_set_hl(0, "texLigature", { link = "Normal" })
-
 end)
 
 -- LaTeX-specific autocmd
