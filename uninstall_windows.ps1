@@ -11,6 +11,7 @@ if ($langChoice -eq "2") {
     $MSG_TITLE = "Disinstallazione Ambiente Neovim"
     $MSG_PROMPT = "Vuoi disinstallare"
     $MSG_WINGET = "Rimozione pacchetti base Winget..."
+    $MSG_MSVC = "Rimozione Visual Studio Build Tools (attenzione, pesano ~3GB e potrebbero servire ad altro)..."
     $MSG_TEXLAB = "Rimozione Texlab (LaTeX LSP)..."
     $MSG_PIP = "Rimozione pacchetti Python (pip)..."
     $MSG_NPM = "Rimozione pacchetti Node (npm)..."
@@ -25,6 +26,7 @@ if ($langChoice -eq "2") {
     $MSG_TITLE = "Neovim Environment Uninstaller"
     $MSG_PROMPT = "Do you want to uninstall"
     $MSG_WINGET = "Removing base Winget packages..."
+    $MSG_MSVC = "Removing Visual Studio Build Tools (warning, they are ~3GB and might be used by other tools)..."
     $MSG_TEXLAB = "Removing Texlab (LaTeX LSP)..."
     $MSG_PIP = "Removing Python packages (pip)..."
     $MSG_NPM = "Removing Node packages (npm)..."
@@ -56,8 +58,7 @@ $packages = @(
     @("GNU.Ripgrep", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg"),
-    @("LLVM.LLVM", "clang")
+    @("Gyan.FFmpeg", "ffmpeg")
 )
 
 foreach ($pkgPair in $packages) {
@@ -68,6 +69,14 @@ foreach ($pkgPair in $packages) {
     } else {
         Write-Host "- $pkgId $MSG_SKIPPED" -ForegroundColor DarkGray
     }
+}
+
+Write-Host "`n$MSG_MSVC" -ForegroundColor Yellow
+if (Ask-Permission "$MSG_PROMPT Microsoft.VisualStudio.2022.BuildTools (C/C++ Compiler)?") {
+    winget uninstall --id Microsoft.VisualStudio.2022.BuildTools
+    Write-Host "- Build Tools $MSG_REMOVED" -ForegroundColor Green
+} else {
+    Write-Host "- Build Tools $MSG_SKIPPED" -ForegroundColor DarkGray
 }
 
 Write-Host "`n$MSG_TEXLAB" -ForegroundColor Yellow
@@ -84,33 +93,56 @@ if (Ask-Permission "$MSG_PROMPT texlab?") {
 }
 
 Write-Host "`n$MSG_PIP" -ForegroundColor Yellow
-$pyExe = "python"
-$pyArgs = @()
-if (Get-Command py -ErrorAction SilentlyContinue) {
-    py -3.11 --version 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $pyExe = "py"
-        $pyArgs = @("-3.11")
-    }
-}
-if ($pyExe -eq "python") {
-    $fallbackPaths = @(
+
+function Find-Python311 {
+    $directPaths = @(
         "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
-        "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
         "$env:ProgramFiles\Python311\python.exe",
-        "$env:ProgramFiles\Python312\python.exe"
+        "${env:ProgramFiles(x86)}\Python311\python.exe"
     )
-    foreach ($p in $fallbackPaths) {
-        if (Test-Path $p) {
-            $pyExe = $p
-            break
+    foreach ($p in $directPaths) {
+        if (Test-Path $p) { return $p }
+    }
+
+    $searchRoots = @(
+        "$env:LOCALAPPDATA\Programs",
+        "$env:ProgramFiles",
+        "${env:ProgramFiles(x86)}"
+    )
+    foreach ($root in $searchRoots) {
+        $found = Get-ChildItem -Path $root -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
+                 Where-Object {
+                     $v = & $_.FullName --version 2>&1
+                     $v -match "^Python 3\.(11|12)\."
+                 } | Select-Object -First 1
+        if ($found) { return $found.FullName }
+    }
+
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        foreach ($ver in @("3.11", "3.12")) {
+            $check = & py "-$ver" --version 2>&1
+            if ($LASTEXITCODE -eq 0) { return "py:-$ver" }
         }
     }
+    return $null
 }
+
+$pyExe  = "python"
+$pyArgs = @()
+$result = Find-Python311
+if ($result) {
+    if ($result -like "py:*") {
+        $pyExe  = "py"
+        $pyArgs = @($result.Split(":")[1])
+    } else {
+        $pyExe = $result
+    }
+}
+
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     if (Ask-Permission "$MSG_PROMPT $pyPkg (pip)?") {
-        & $pyExe $pyArgs -m pip uninstall -y $pyPkg | Out-Null
+        & $pyExe @pyArgs -m pip uninstall -y $pyPkg | Out-Null
         Write-Host "- $pyPkg $MSG_REMOVED" -ForegroundColor Green
     } else {
         Write-Host "- $pyPkg $MSG_SKIPPED" -ForegroundColor DarkGray
@@ -124,6 +156,12 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
         Write-Host "- pyright $MSG_REMOVED" -ForegroundColor Green
     } else {
         Write-Host "- pyright $MSG_SKIPPED" -ForegroundColor DarkGray
+    }
+    if (Ask-Permission "$MSG_PROMPT tree-sitter-cli (npm)?") {
+        npm uninstall -g tree-sitter-cli
+        Write-Host "- tree-sitter-cli $MSG_REMOVED" -ForegroundColor Green
+    } else {
+        Write-Host "- tree-sitter-cli $MSG_SKIPPED" -ForegroundColor DarkGray
     }
 }
 

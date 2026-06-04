@@ -17,10 +17,11 @@ if ($langChoice -eq "2") {
     $MSG_WORK_PROMPT = "Inserisci il percorso di default per Nvim-Tree e FZF (premi Invio per '~/Documents/uni')"
     $MSG_WINGET_ERR = "Winget non trovato! Assicurati di avere App Installer aggiornato dallo Store."
     $MSG_STEP1 = "[1/4] Installazione dei pacchetti base tramite Winget..."
+    $MSG_MSVC = "[+] Installazione Visual Studio Build Tools (Compilatore C/C++)..."
+    $MSG_MSVC_WAIT = "Scaricamento e installazione in corso (~3GB). Attendi..."
     $MSG_STEP2 = "[2/4] Installazione di Texlab (LaTeX LSP)..."
-    $MSG_STEP3 = "[3/4] Installazione dei pacchetti Python (pynvim, neovim-remote, manim)..."
-    $MSG_STEP4 = "[4/4] Applicazione Fix e Installazione Font (Roboto Mono)..."
-    $MSG_DONE = "Installazione completata!"
+    $MSG_STEP3 = "[3/4] Installazione dei pacchetti Python (pynvim, neovim-remote, manim, black)..."
+    $MSG_STEP4 = "[4/4] Installazione Font (Roboto Mono)..."
     $MSG_DONE = "Installazione completata! Ricordati di impostare 'RobotoMono Nerd Font' nel tuo terminale."
     $MSG_DONE1 = "1. Riavviare il terminale per caricare i nuovi percorsi nel PATH."
     $MSG_DONE2 = "2. Copiare il contenuto della cartella 'windows' dentro '$env:USERPROFILE\AppData\Local\nvim\'"
@@ -29,10 +30,8 @@ if ($langChoice -eq "2") {
     $MSG_ALREADY_INSTALLED = "già installato, salto."
     $MSG_INSTALLING = "Installazione di"
     $MSG_DOWNLOADING = "Scaricando"
-    $MSG_FIX_CURL = "Aggiunto Git curl al PATH utente per risolvere errori di certificato (Soluzione 2)."
     $MSG_FONT_DONE = "Font installato."
     $MSG_SKIPPED = "Saltato (già installato)"
-    $MSG_RESTART = "NOTA: Potrebbe essere necessario riavviare il terminale per far funzionare alcuni comandi (come python o npm)."
     $MSG_COPY_CONFIG = "Copia della configurazione di Neovim in ~/AppData/Local/nvim..."
 } else {
     $MSG_TITLE = "Neovim Environment Installer"
@@ -40,9 +39,11 @@ if ($langChoice -eq "2") {
     $MSG_WORK_PROMPT = "Enter default path for Nvim-Tree and FZF (press Enter for '~/Documents/uni')"
     $MSG_WINGET_ERR = "Winget not found! Make sure App Installer is updated from the Store."
     $MSG_STEP1 = "[1/4] Installing base packages via Winget..."
+    $MSG_MSVC = "[+] Installing Visual Studio Build Tools (C/C++ Compiler)..."
+    $MSG_MSVC_WAIT = "Downloading and installing (~3GB). Please wait..."
     $MSG_STEP2 = "[2/4] Installing Texlab (LaTeX LSP)..."
-    $MSG_STEP3 = "[3/4] Installing Python packages (pynvim, neovim-remote, manim)..."
-    $MSG_STEP4 = "[4/4] Applying Fixes and Installing Font (Roboto Mono)..."
+    $MSG_STEP3 = "[3/4] Installing Python packages (pynvim, neovim-remote, manim, black)..."
+    $MSG_STEP4 = "[4/4] Installing Font (Roboto Mono)..."
     $MSG_DONE = "Installation complete! Remember to set 'RobotoMono Nerd Font' in your terminal."
     $MSG_DONE1 = "1. Restart the terminal to load new PATH variables."
     $MSG_DONE2 = "2. Copy the 'windows' folder contents into '$env:USERPROFILE\AppData\Local\nvim\'"
@@ -51,10 +52,8 @@ if ($langChoice -eq "2") {
     $MSG_ALREADY_INSTALLED = "already installed, skipping."
     $MSG_INSTALLING = "Installing"
     $MSG_DOWNLOADING = "Downloading"
-    $MSG_FIX_CURL = "Added Git curl to user PATH to fix certificate errors (Solution 2)."
     $MSG_FONT_DONE = "Font installed."
     $MSG_SKIPPED = "Skipped (already installed)"
-    $MSG_RESTART = "NOTE: You may need to restart your terminal for some commands (like python or npm) to work."
     $MSG_COPY_CONFIG = "Copying Neovim configuration to ~/AppData/Local/nvim..."
 }
 
@@ -79,7 +78,6 @@ if (Test-Path $uiFile) {
     (Get-Content $uiFile) -replace '~/Documents/uni/', "$workspacePath/" | Set-Content $uiFile
 }
 
-# Ensure winget is available
 if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
     Write-Host $MSG_WINGET_ERR -ForegroundColor Red
     exit 1
@@ -93,8 +91,7 @@ $packages = @(
     @("GNU.Ripgrep", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg"),
-    @("LLVM.LLVM", "clang")
+    @("Gyan.FFmpeg", "ffmpeg")
 )
 
 Write-Host "`n$MSG_STEP1" -ForegroundColor Yellow
@@ -102,7 +99,6 @@ foreach ($pkgPair in $packages) {
     $pkgId = $pkgPair[0]
     $cmd = $pkgPair[1]
     
-    # Check if command exists or package is installed
     $isInstalled = $false
     if (Get-Command $cmd -ErrorAction SilentlyContinue) {
         $isInstalled = $true
@@ -116,6 +112,15 @@ foreach ($pkgPair in $packages) {
         Write-Host "$MSG_INSTALLING $pkgId..."
         winget install --id $pkgId -e --accept-package-agreements --accept-source-agreements
     }
+}
+
+Write-Host "`n$MSG_MSVC" -ForegroundColor Yellow
+$vsBuildToolsPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
+if (!(Test-Path $vsBuildToolsPath)) {
+    Write-Host $MSG_MSVC_WAIT -ForegroundColor Cyan
+    winget install --id Microsoft.VisualStudio.2022.BuildTools --override "--wait --quiet --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" -e --accept-package-agreements --accept-source-agreements
+} else {
+    Write-Host "- Visual Studio Build Tools $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
 }
 
 Write-Host "`n$MSG_STEP2" -ForegroundColor Yellow
@@ -134,43 +139,90 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
 }
 
 Write-Host "`n$MSG_STEP3" -ForegroundColor Yellow
-# Cerchiamo di usare Python 3.11 (se disponibile tramite py launcher) per evitare problemi di compilazione con Python 3.14+
-$pyExe = "python"
-$pyArgs = @()
-if (Get-Command py -ErrorAction SilentlyContinue) {
-    py -3.11 --version 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        $pyExe = "py"
-        $pyArgs = @("-3.11")
-        Write-Host "Trovato Python 3.11 (tramite py launcher), lo utilizzo per pip..." -ForegroundColor Green
+
+# Reload Path to ensure python/winget tools are available
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+function Find-Python311 {
+    $directPaths = @(
+        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
+        "$env:ProgramFiles\Python311\python.exe",
+        "${env:ProgramFiles(x86)}\Python311\python.exe"
+    )
+    foreach ($p in $directPaths) {
+        if (Test-Path $p) { return $p }
     }
+
+    $searchRoots = @(
+        "$env:LOCALAPPDATA\Programs",
+        "$env:ProgramFiles",
+        "${env:ProgramFiles(x86)}"
+    )
+    foreach ($root in $searchRoots) {
+        $found = Get-ChildItem -Path $root -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
+                 Where-Object {
+                     $v = & $_.FullName --version 2>&1
+                     $v -match "^Python 3\.(11|12)\."
+                 } | Select-Object -First 1
+        if ($found) { return $found.FullName }
+    }
+
+    if (Get-Command py -ErrorAction SilentlyContinue) {
+        foreach ($ver in @("3.11", "3.12")) {
+            $check = & py "-$ver" --version 2>&1
+            if ($LASTEXITCODE -eq 0) { return "py:-$ver" }
+        }
+    }
+
+    return $null
 }
 
-if ($pyExe -eq "python") {
-    $fallbackPaths = @(
-        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
-        "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
-        "$env:ProgramFiles\Python311\python.exe",
-        "$env:ProgramFiles\Python312\python.exe"
-    )
-    foreach ($p in $fallbackPaths) {
-        if (Test-Path $p) {
-            $pyExe = $p
-            Write-Host "Trovato Python compatibile in $p, lo utilizzo per pip..." -ForegroundColor Green
-            break
+$pyExe  = $null
+$pyArgs = @()
+
+$result = Find-Python311
+if ($result) {
+    if ($result -like "py:*") {
+        $pyExe  = "py"
+        $pyArgs = @($result.Split(":")[1])
+        Write-Host "Trovato Python $($pyArgs[0]) tramite py launcher." -ForegroundColor Green
+    } else {
+        $pyExe = $result
+        $pyVer = & $pyExe --version 2>&1
+        Write-Host "Trovato $pyVer in: $pyExe" -ForegroundColor Green
+    }
+} else {
+    Write-Host "Python 3.11 non trovato nel sistema. Installazione tramite winget..." -ForegroundColor Yellow
+    winget install --id Python.Python.3.11 -e --accept-package-agreements --accept-source-agreements
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" +
+                [System.Environment]::GetEnvironmentVariable("Path","User")
+    $result = Find-Python311
+    if ($result -and $result -notlike "py:*") {
+        $pyExe = $result
+    } elseif ($result -like "py:*") {
+        $pyExe  = "py"
+        $pyArgs = @($result.Split(":")[1])
+    } else {
+        $defaultPath = "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe"
+        if (Test-Path $defaultPath) {
+            $pyExe = $defaultPath
+        } else {
+            Write-Host "ERRORE: Python 3.11 non installabile automaticamente." -ForegroundColor Red
+            $pyExe = "python"
         }
     }
 }
 
-& $pyExe $pyArgs -m pip install --no-cache-dir --upgrade pip | Out-Null
+& $pyExe @pyArgs -m pip install --no-cache-dir --upgrade pip | Out-Null
+
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
-    $pipShow = & $pyExe $pyArgs -m pip show $pyPkg 2>$null
+    $pipShow = & $pyExe @pyArgs -m pip show $pyPkg 2>$null
     if ($pipShow) {
         Write-Host "- $pyPkg $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
     } else {
         Write-Host "$MSG_INSTALLING $pyPkg..."
-        & $pyExe $pyArgs -m pip install --no-cache-dir $pyPkg
+        & $pyExe @pyArgs -m pip install --no-cache-dir $pyPkg
     }
 }
 
@@ -190,18 +242,7 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
 }
 
 Write-Host "`n$MSG_STEP4" -ForegroundColor Yellow
-# FIX CURL (Solution 2)
-$gitBinPath = "$env:ProgramFiles\Git\mingw64\bin"
-if (Test-Path "$gitBinPath\curl.exe") {
-    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    if ($userPath -notlike "*$gitBinPath*") {
-        [Environment]::SetEnvironmentVariable("Path", "$gitBinPath;$userPath", "User")
-        Write-Host $MSG_FIX_CURL -ForegroundColor Green
-    }
-}
 
-# INSTALL FONT
-Write-Host "$MSG_INSTALLING RobotoMono Nerd Font..."
 $fontDir = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Fonts"
 if (!(Test-Path $fontDir)) { New-Item -ItemType Directory -Path $fontDir | Out-Null }
 $fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/RobotoMono.zip"
