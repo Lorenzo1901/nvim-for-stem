@@ -84,7 +84,7 @@ if ! command -v brew &> /dev/null; then
 fi
 
 echo "$MSG_SYS_DEP"
-for pkg in neovim git node python ripgrep fzf texlab ffmpeg pkg-config cairo pango; do
+for pkg in neovim git node python ripgrep fzf texlab ffmpeg pkg-config cairo pango luarocks perl; do
     if brew list "$pkg" &> /dev/null; then
         echo "- $pkg $MSG_ALREADY_INSTALLED"
     else

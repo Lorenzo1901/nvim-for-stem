@@ -92,7 +92,9 @@ $packages = @(
     @("GNU.Ripgrep", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg")
+    @("Gyan.FFmpeg", "ffmpeg"),
+    @("DEVCOM.Lua", "luarocks"),
+    @("StrawberryPerl.StrawberryPerl", "perl")
 )
 
 Write-Host "`n$MSG_STEP1" -ForegroundColor Yellow

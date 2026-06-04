@@ -30,7 +30,7 @@ return {
                 button("f", "  Find file", ":lua require('lazy').load({plugins={'fzf.vim'}}) vim.cmd('FZF ~/Documents/uni/')<CR>"),
 		button("r", "󰋚  Recent files", ":lua require('lazy').load({plugins={'fzf.vim'}}) vim.cmd('History')<CR>"),
                 button("e", "  New file", ":ene <BAR> startinsert <CR>"),
-                button("c", "  Configuration", ":lua require('lazy').load({plugins={'fzf.vim'}}) vim.cmd('FZF C:/Users/Lorenzo/AppData/Local/nvim')<CR>"),
+                button("c", "  Configuration", ":lua require('lazy').load({plugins={'fzf.vim'}}) vim.cmd('FZF ' .. vim.fn.stdpath('config'))<CR>"),
                 button("u", "  Update plugins", ":Lazy sync<CR>"),
                 button("q", "  Quit", ":qa<CR>")
             }
