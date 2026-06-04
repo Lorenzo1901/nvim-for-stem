@@ -142,7 +142,23 @@ if (Get-Command py -ErrorAction SilentlyContinue) {
     if ($LASTEXITCODE -eq 0) {
         $pyExe = "py"
         $pyArgs = @("-3.11")
-        Write-Host "Trovato Python 3.11, lo utilizzo per pip..." -ForegroundColor Green
+        Write-Host "Trovato Python 3.11 (tramite py launcher), lo utilizzo per pip..." -ForegroundColor Green
+    }
+}
+
+if ($pyExe -eq "python") {
+    $fallbackPaths = @(
+        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
+        "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
+        "$env:ProgramFiles\Python311\python.exe",
+        "$env:ProgramFiles\Python312\python.exe"
+    )
+    foreach ($p in $fallbackPaths) {
+        if (Test-Path $p) {
+            $pyExe = $p
+            Write-Host "Trovato Python compatibile in $p, lo utilizzo per pip..." -ForegroundColor Green
+            break
+        }
     }
 }
 

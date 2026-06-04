@@ -93,6 +93,20 @@ if (Get-Command py -ErrorAction SilentlyContinue) {
         $pyArgs = @("-3.11")
     }
 }
+if ($pyExe -eq "python") {
+    $fallbackPaths = @(
+        "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
+        "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
+        "$env:ProgramFiles\Python311\python.exe",
+        "$env:ProgramFiles\Python312\python.exe"
+    )
+    foreach ($p in $fallbackPaths) {
+        if (Test-Path $p) {
+            $pyExe = $p
+            break
+        }
+    }
+}
 $pyPackages = @("pynvim", "neovim-remote", "manim", "black")
 foreach ($pyPkg in $pyPackages) {
     if (Ask-Permission "$MSG_PROMPT $pyPkg (pip)?") {
