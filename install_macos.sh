@@ -92,8 +92,12 @@ echo "$MSG_PY_DEP"
 pip3 install --user --break-system-packages pynvim neovim-remote manim black || pip3 install --user pynvim neovim-remote manim black
 
 if command -v npm &> /dev/null; then
-    echo "$MSG_INSTALLING Pyright (LSP)..."
-    npm install -g pyright
+    if command -v pyright &> /dev/null; then
+        echo "- pyright $MSG_ALREADY_INSTALLED"
+    else
+        echo "$MSG_INSTALLING Pyright (LSP)..."
+        npm install -g pyright
+    fi
 fi
 
 echo ""

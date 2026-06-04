@@ -80,8 +80,12 @@ if check_cmd pacman; then
     pip3 install --user --break-system-packages pynvim neovim-remote manim black
 
     if check_cmd npm; then
-        echo "$MSG_INSTALLING Pyright (LSP)..."
-        sudo npm install -g pyright
+        if check_cmd pyright; then
+            echo "- pyright $MSG_ALREADY_INSTALLED"
+        else
+            echo "$MSG_INSTALLING Pyright (LSP)..."
+            sudo npm install -g pyright
+        fi
     fi
 
 elif check_cmd apt; then
@@ -127,8 +131,12 @@ elif check_cmd apt; then
     pip3 install --user --break-system-packages pynvim neovim-remote manim black || pip3 install --user pynvim neovim-remote manim black
 
     if check_cmd npm; then
-        echo "$MSG_INSTALLING Pyright (LSP)..."
-        sudo npm install -g pyright
+        if check_cmd pyright; then
+            echo "- pyright $MSG_ALREADY_INSTALLED"
+        else
+            echo "$MSG_INSTALLING Pyright (LSP)..."
+            sudo npm install -g pyright
+        fi
     fi
 else
     echo "$MSG_UNSUPPORTED"

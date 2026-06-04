@@ -137,8 +137,12 @@ foreach ($pyPkg in $pyPackages) {
 }
 
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    Write-Host "`n$MSG_INSTALLING Pyright (LSP)..." -ForegroundColor Yellow
-    npm install -g pyright
+    if (Get-Command pyright -ErrorAction SilentlyContinue) {
+        Write-Host "- pyright $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
+    } else {
+        Write-Host "`n$MSG_INSTALLING Pyright (LSP)..." -ForegroundColor Yellow
+        npm install -g pyright
+    }
 }
 
 Write-Host "`n$MSG_STEP4" -ForegroundColor Yellow
