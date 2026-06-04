@@ -66,7 +66,8 @@ $workspacePath = Read-Host $MSG_WORK_PROMPT
 if ([string]::IsNullOrWhiteSpace($workspacePath)) {
     $workspacePath = "~/Documents/uni"
 }
-$workspacePath = $workspacePath.TrimEnd('/')
+# IMPORTANT: Convert Windows backslashes to forward slashes for Lua strings
+$workspacePath = $workspacePath.TrimEnd('\').TrimEnd('/').Replace('\', '/')
 
 $editorFile = "windows\lua\plugins\editor.lua"
 $uiFile = "windows\lua\plugins\ui.lua"
@@ -141,7 +142,10 @@ if (!$msvcFound) {
 }
 
 Write-Host "`n$MSG_STEP2" -ForegroundColor Yellow
-$texlabPath = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\texlab.exe"
+$binDir = "$env:USERPROFILE\AppData\Local\nvim-data\bin"
+if (!(Test-Path $binDir)) { New-Item -ItemType Directory -Path $binDir -Force | Out-Null }
+$texlabPath = "$binDir\texlab.exe"
+
 if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyContinue)) {
     Write-Host "$MSG_DOWNLOADING texlab..."
     $url = "https://github.com/latex-lsp/texlab/releases/latest/download/texlab-x86_64-windows.zip"
@@ -151,6 +155,13 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
     Move-Item -Path "$env:TEMP\texlab\texlab.exe" -Destination $texlabPath -Force
     Remove-Item -Path $zipFile
     Remove-Item -Path "$env:TEMP\texlab" -Recurse -Force
+    
+    # Aggiungi a PATH se non presente
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    if ($userPath -notlike "*$binDir*") {
+        [Environment]::SetEnvironmentVariable("Path", "$binDir;$userPath", "User")
+        Write-Host "- Aggiunto $binDir al PATH utente." -ForegroundColor Green
+    }
 } else {
     Write-Host "- texlab $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
 }
@@ -176,12 +187,17 @@ function Find-Python311 {
         "${env:ProgramFiles(x86)}"
     )
     foreach ($root in $searchRoots) {
-        $found = Get-ChildItem -Path $root -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
-                 Where-Object {
-                     $v = & $_.FullName --version 2>&1
-                     $v -match "^Python 3\.(11|12)\."
-                 } | Select-Object -First 1
-        if ($found) { return $found.FullName }
+        # OTTIMIZZAZIONE: cerchiamo solo nelle cartelle 'Python*' per evitare un Get-ChildItem ricorsivo 
+        # su TUTTO Program Files che richiede minuti ed esplode con "Access Denied".
+        if (Test-Path $root) {
+            $found = Get-ChildItem -Path $root -Filter "Python*" -Directory -ErrorAction SilentlyContinue |
+                     Get-ChildItem -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
+                     Where-Object {
+                         $v = & $_.FullName --version 2>&1
+                         $v -match "^Python 3\.(11|12)\."
+                     } | Select-Object -First 1
+            if ($found) { return $found.FullName }
+        }
     }
 
     if (Get-Command py -ErrorAction SilentlyContinue) {

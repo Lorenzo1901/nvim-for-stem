@@ -81,7 +81,7 @@ if (Ask-Permission "$MSG_PROMPT Microsoft.VisualStudio.2022.BuildTools (C/C++ Co
 
 Write-Host "`n$MSG_TEXLAB" -ForegroundColor Yellow
 if (Ask-Permission "$MSG_PROMPT texlab?") {
-    $texlabPath = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps\texlab.exe"
+    $texlabPath = "$env:USERPROFILE\AppData\Local\nvim-data\bin\texlab.exe"
     if (Test-Path $texlabPath) {
         Remove-Item -Path $texlabPath -Force
         Write-Host "- texlab $MSG_REMOVED" -ForegroundColor Green
@@ -110,12 +110,15 @@ function Find-Python311 {
         "${env:ProgramFiles(x86)}"
     )
     foreach ($root in $searchRoots) {
-        $found = Get-ChildItem -Path $root -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
-                 Where-Object {
-                     $v = & $_.FullName --version 2>&1
-                     $v -match "^Python 3\.(11|12)\."
-                 } | Select-Object -First 1
-        if ($found) { return $found.FullName }
+        if (Test-Path $root) {
+            $found = Get-ChildItem -Path $root -Filter "Python*" -Directory -ErrorAction SilentlyContinue |
+                     Get-ChildItem -Filter "python.exe" -Recurse -ErrorAction SilentlyContinue |
+                     Where-Object {
+                         $v = & $_.FullName --version 2>&1
+                         $v -match "^Python 3\.(11|12)\."
+                     } | Select-Object -First 1
+            if ($found) { return $found.FullName }
+        }
     }
 
     if (Get-Command py -ErrorAction SilentlyContinue) {
