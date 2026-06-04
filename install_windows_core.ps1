@@ -142,7 +142,7 @@ if (!$msvcFound) {
 }
 
 Write-Host "`n$MSG_STEP2" -ForegroundColor Yellow
-$binDir = "$env:USERPROFILE\AppData\Local\nvim-data\bin"
+$binDir = "$env:USERPROFILE\AppData\Local\bin"
 if (!(Test-Path $binDir)) { New-Item -ItemType Directory -Path $binDir -Force | Out-Null }
 $texlabPath = "$binDir\texlab.exe"
 
@@ -150,17 +150,21 @@ if (!(Test-Path $texlabPath) -and !(Get-Command texlab -ErrorAction SilentlyCont
     Write-Host "$MSG_DOWNLOADING texlab..."
     $url = "https://github.com/latex-lsp/texlab/releases/latest/download/texlab-x86_64-windows.zip"
     $zipFile = "$env:TEMP\texlab.zip"
-    Invoke-WebRequest -Uri $url -OutFile $zipFile
-    Expand-Archive -Path $zipFile -DestinationPath "$env:TEMP\texlab" -Force
-    Move-Item -Path "$env:TEMP\texlab\texlab.exe" -Destination $texlabPath -Force
-    Remove-Item -Path $zipFile
-    Remove-Item -Path "$env:TEMP\texlab" -Recurse -Force
-    
-    # Aggiungi a PATH se non presente
-    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-    if ($userPath -notlike "*$binDir*") {
-        [Environment]::SetEnvironmentVariable("Path", "$binDir;$userPath", "User")
-        Write-Host "- Aggiunto $binDir al PATH utente." -ForegroundColor Green
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $zipFile -ErrorAction Stop
+        Expand-Archive -Path $zipFile -DestinationPath "$env:TEMP\texlab" -Force -ErrorAction Stop
+        Move-Item -Path "$env:TEMP\texlab\texlab.exe" -Destination $texlabPath -Force -ErrorAction Stop
+        
+        $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        if ($userPath -notlike "*$binDir*") {
+            [Environment]::SetEnvironmentVariable("Path", "$binDir;$userPath", "User")
+            Write-Host "- Aggiunto $binDir al PATH utente." -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "ERRORE durante il download o l'estrazione di Texlab: $_" -ForegroundColor Red
+    } finally {
+        if (Test-Path $zipFile) { Remove-Item -Path $zipFile -Force }
+        if (Test-Path "$env:TEMP\texlab") { Remove-Item -Path "$env:TEMP\texlab" -Recurse -Force }
     }
 } else {
     Write-Host "- texlab $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
@@ -276,24 +280,39 @@ if (Get-Command npm -ErrorAction SilentlyContinue) {
 
 Write-Host "`n$MSG_STEP4" -ForegroundColor Yellow
 
+# FIX CURL (Solution 2) - Solve Neovim SSL Certificate issues on Windows
+$gitBinPath = "$env:ProgramFiles\Git\mingw64\bin"
+if (Test-Path "$gitBinPath\curl.exe") {
+    $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    if ($userPath -notlike "*$gitBinPath*") {
+        [Environment]::SetEnvironmentVariable("Path", "$gitBinPath;$userPath", "User")
+        Write-Host "- Aggiunto Git curl al PATH utente per risolvere errori di certificato." -ForegroundColor Green
+    }
+}
+
 $fontDir = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Fonts"
 if (!(Test-Path $fontDir)) { New-Item -ItemType Directory -Path $fontDir | Out-Null }
 $fontUrl = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/RobotoMono.zip"
 $zipFile = "$env:TEMP\RobotoMono.zip"
 $extractDir = "$env:TEMP\RobotoMono"
 if (!(Test-Path "$fontDir\RobotoMonoNerdFont-Regular.ttf")) {
-    Invoke-WebRequest -Uri $fontUrl -OutFile $zipFile
-    Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force
-    foreach ($font in Get-ChildItem -Path $extractDir -Filter "*.ttf") {
-        $targetPath = "$fontDir\$($font.Name)"
-        if (!(Test-Path $targetPath)) {
-            Copy-Item -Path $font.FullName -Destination $targetPath
-            New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" -Name $font.Name.Replace(".ttf", " (TrueType)") -Value $targetPath -PropertyType String -Force | Out-Null
+    try {
+        Invoke-WebRequest -Uri $fontUrl -OutFile $zipFile -ErrorAction Stop
+        Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force -ErrorAction Stop
+        foreach ($font in Get-ChildItem -Path $extractDir -Filter "*.ttf") {
+            $targetPath = "$fontDir\$($font.Name)"
+            if (!(Test-Path $targetPath)) {
+                Copy-Item -Path $font.FullName -Destination $targetPath -ErrorAction Stop
+                New-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" -Name $font.Name.Replace(".ttf", " (TrueType)") -Value $targetPath -PropertyType String -Force | Out-Null
+            }
         }
+        Write-Host $MSG_FONT_DONE -ForegroundColor Green
+    } catch {
+        Write-Host "ERRORE durante l'installazione del font Roboto Mono: $_" -ForegroundColor Red
+    } finally {
+        if (Test-Path $zipFile) { Remove-Item -Path $zipFile -Force }
+        if (Test-Path $extractDir) { Remove-Item -Path $extractDir -Recurse -Force }
     }
-    Remove-Item -Path $zipFile -Force
-    Remove-Item -Path $extractDir -Recurse -Force
-    Write-Host $MSG_FONT_DONE -ForegroundColor Green
 } else {
     Write-Host "- Roboto Mono Nerd Font $MSG_SKIPPED" -ForegroundColor DarkGray
 }

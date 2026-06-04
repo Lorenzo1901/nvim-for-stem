@@ -81,7 +81,7 @@ if (Ask-Permission "$MSG_PROMPT Microsoft.VisualStudio.2022.BuildTools (C/C++ Co
 
 Write-Host "`n$MSG_TEXLAB" -ForegroundColor Yellow
 if (Ask-Permission "$MSG_PROMPT texlab?") {
-    $texlabPath = "$env:USERPROFILE\AppData\Local\nvim-data\bin\texlab.exe"
+    $texlabPath = "$env:USERPROFILE\AppData\Local\bin\texlab.exe"
     if (Test-Path $texlabPath) {
         Remove-Item -Path $texlabPath -Force
         Write-Host "- texlab $MSG_REMOVED" -ForegroundColor Green
@@ -172,14 +172,21 @@ Write-Host "`n$MSG_FONT" -ForegroundColor Yellow
 if (Ask-Permission "$MSG_PROMPT Roboto Mono Nerd Font?") {
     $fontDir = "$env:USERPROFILE\AppData\Local\Microsoft\Windows\Fonts"
     $fontRemoved = $false
+    $fontInUse = $false
     if (Test-Path "$fontDir\RobotoMonoNerdFont-Regular.ttf") {
         foreach ($font in Get-ChildItem -Path $fontDir -Filter "RobotoMono*.ttf") {
-            Remove-Item -Path $font.FullName -Force
-            Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" -Name $font.Name.Replace(".ttf", " (TrueType)") -ErrorAction SilentlyContinue
-            $fontRemoved = $true
+            try {
+                Remove-Item -Path $font.FullName -Force -ErrorAction Stop
+                Remove-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts" -Name $font.Name.Replace(".ttf", " (TrueType)") -ErrorAction SilentlyContinue
+                $fontRemoved = $true
+            } catch {
+                $fontInUse = $true
+            }
         }
     }
-    if ($fontRemoved) {
+    if ($fontInUse) {
+        Write-Host "- Impossibile rimuovere il font perché è in uso dal terminale corrente. Chiudi il terminale e cancellalo manualmente da $fontDir." -ForegroundColor Red
+    } elseif ($fontRemoved) {
         Write-Host "- Roboto Mono Nerd Font $MSG_REMOVED" -ForegroundColor Green
     } else {
         Write-Host "- Roboto Mono Nerd Font $MSG_NOT_FOUND" -ForegroundColor DarkGray
