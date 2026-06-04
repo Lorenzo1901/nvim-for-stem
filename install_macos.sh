@@ -25,11 +25,13 @@ if [ "$LANG_CHOICE" = "2" ]; then
     MSG_COPY="1. Copiare il contenuto della cartella 'macos' dentro ~/.config/nvim/"
     MSG_OPEN="2. Aprire Neovim per scaricare i plugin via lazy.nvim."
     MSG_FONT_REMINDER="3. Impostare il font del terminale su 'RobotoMono Nerd Font'."
-    MSG_ALREADY_INSTALLED="già installato, salto."
+    MSG_ALREADY_INSTALLED="è già installato."
     MSG_INSTALLING="Installazione di"
     MSG_FONT_DEP="Installazione Roboto Mono Nerd Font..."
+    MSG_DONE="Installazione completata! Ricordati di impostare 'RobotoMono Nerd Font' nel tuo terminale."
+    MSG_COPY_CONFIG="Copia della configurazione di Neovim in ~/.config/nvim..."
 else
-    MSG_TITLE="Neovim Environment Setup"
+    MSG_TITLE="Neovim Environment Installer"
     MSG_WORK_DIR="[Workspace Directory Configuration]"
     MSG_WORK_PROMPT="Enter default path for Nvim-Tree and FZF [~/Documents/uni]: "
     MSG_BREW_MISSING="Homebrew not found. Installing..."
@@ -40,9 +42,11 @@ else
     MSG_COPY="1. Copy the 'macos' folder contents to ~/.config/nvim/"
     MSG_OPEN="2. Open Neovim to let lazy.nvim download all plugins."
     MSG_FONT_REMINDER="3. Set your terminal font to 'RobotoMono Nerd Font'."
-    MSG_ALREADY_INSTALLED="already installed, skipping."
     MSG_INSTALLING="Installing"
+    MSG_ALREADY_INSTALLED="is already installed."
     MSG_FONT_DEP="Installing Roboto Mono Nerd Font..."
+    MSG_DONE="Installation complete! Remember to set 'RobotoMono Nerd Font' in your terminal."
+    MSG_COPY_CONFIG="Copying Neovim configuration to ~/.config/nvim..."
 fi
 
 echo "========================================"

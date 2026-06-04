@@ -29,6 +29,7 @@ if [ "$LANG_CHOICE" = "2" ]; then
     MSG_ALREADY_INSTALLED="già installato, salto."
     MSG_INSTALLING="Installazione di"
     MSG_FONT_DEP="Installazione Roboto Mono Nerd Font..."
+    MSG_COPY_CONFIG="Copia della configurazione di Neovim in ~/.config/nvim..."
 else
     MSG_TITLE="Neovim Environment Setup"
     MSG_WORK_DIR="[Workspace Directory Configuration]"
@@ -45,6 +46,7 @@ else
     MSG_ALREADY_INSTALLED="already installed, skipping."
     MSG_INSTALLING="Installing"
     MSG_FONT_DEP="Installing Roboto Mono Nerd Font..."
+    MSG_COPY_CONFIG="Copying Neovim configuration to ~/.config/nvim..."
 fi
 
 echo "========================================"

@@ -18,6 +18,7 @@ if ($langChoice -eq "2") {
     $MSG_STEP3 = "[3/4] Installazione dei pacchetti Python (pynvim, neovim-remote, manim)..."
     $MSG_STEP4 = "[4/4] Applicazione Fix e Installazione Font (Roboto Mono)..."
     $MSG_DONE = "Installazione completata!"
+    $MSG_DONE = "Installazione completata! Ricordati di impostare 'RobotoMono Nerd Font' nel tuo terminale."
     $MSG_DONE1 = "1. Riavviare il terminale per caricare i nuovi percorsi nel PATH."
     $MSG_DONE2 = "2. Copiare il contenuto della cartella 'windows' dentro '$env:USERPROFILE\AppData\Local\nvim\'"
     $MSG_DONE3 = "3. Aprire Neovim per scaricare i plugin via lazy.nvim."
@@ -27,8 +28,11 @@ if ($langChoice -eq "2") {
     $MSG_DOWNLOADING = "Scaricando"
     $MSG_FIX_CURL = "Aggiunto Git curl al PATH utente per risolvere errori di certificato (Soluzione 2)."
     $MSG_FONT_DONE = "Font installato."
-else
-    $MSG_TITLE = "Neovim Environment Setup"
+    $MSG_SKIPPED = "Saltato (già installato)"
+    $MSG_RESTART = "NOTA: Potrebbe essere necessario riavviare il terminale per far funzionare alcuni comandi (come python o npm)."
+    $MSG_COPY_CONFIG = "Copia della configurazione di Neovim in ~/AppData/Local/nvim..."
+} else {
+    $MSG_TITLE = "Neovim Environment Installer"
     $MSG_WORK_DIR = "[Workspace Directory Configuration]"
     $MSG_WORK_PROMPT = "Enter default path for Nvim-Tree and FZF (press Enter for '~/Documents/uni')"
     $MSG_WINGET_ERR = "Winget not found! Make sure App Installer is updated from the Store."
@@ -36,7 +40,7 @@ else
     $MSG_STEP2 = "[2/4] Installing Texlab (LaTeX LSP)..."
     $MSG_STEP3 = "[3/4] Installing Python packages (pynvim, neovim-remote, manim)..."
     $MSG_STEP4 = "[4/4] Applying Fixes and Installing Font (Roboto Mono)..."
-    $MSG_DONE = "Installation complete!"
+    $MSG_DONE = "Installation complete! Remember to set 'RobotoMono Nerd Font' in your terminal."
     $MSG_DONE1 = "1. Restart the terminal to load new PATH variables."
     $MSG_DONE2 = "2. Copy the 'windows' folder contents into '$env:USERPROFILE\AppData\Local\nvim\'"
     $MSG_DONE3 = "3. Open Neovim to download plugins via lazy.nvim."
@@ -46,6 +50,9 @@ else
     $MSG_DOWNLOADING = "Downloading"
     $MSG_FIX_CURL = "Added Git curl to user PATH to fix certificate errors (Solution 2)."
     $MSG_FONT_DONE = "Font installed."
+    $MSG_SKIPPED = "Skipped (already installed)"
+    $MSG_RESTART = "NOTE: You may need to restart your terminal for some commands (like python or npm) to work."
+    $MSG_COPY_CONFIG = "Copying Neovim configuration to ~/AppData/Local/nvim..."
 }
 
 Write-Host "`n========================================" -ForegroundColor Cyan
@@ -177,7 +184,20 @@ if (!(Test-Path "$fontDir\RobotoMonoNerdFont-Regular.ttf")) {
     Remove-Item -Path $extractDir -Recurse -Force
     Write-Host $MSG_FONT_DONE -ForegroundColor Green
 } else {
-    Write-Host "- RobotoMono Nerd Font $MSG_ALREADY_INSTALLED" -ForegroundColor DarkGray
+    Write-Host "- Roboto Mono Nerd Font $MSG_SKIPPED" -ForegroundColor DarkGray
+}
+
+Write-Host "`n$MSG_COPY_CONFIG" -ForegroundColor Yellow
+$nvimDir = "$env:USERPROFILE\AppData\Local\nvim"
+if (!(Test-Path $nvimDir)) {
+    New-Item -ItemType Directory -Force -Path $nvimDir | Out-Null
+}
+$windowsConfigPath = Join-Path -Path $PSScriptRoot -ChildPath "windows"
+if (Test-Path $windowsConfigPath) {
+    Copy-Item -Path "$windowsConfigPath\*" -Destination $nvimDir -Recurse -Force
+    Write-Host "- OK" -ForegroundColor Green
+} else {
+    Write-Host "Warning: 'windows' directory not found. Please copy the configuration manually." -ForegroundColor Red
 }
 
 Write-Host "`n========================================" -ForegroundColor Cyan
