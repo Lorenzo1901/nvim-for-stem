@@ -20,7 +20,7 @@ return {
             },
             forward_search = {
               executable = "SumatraPDF",
-              args = { "--synctex-forward", "%l:1:%f", "%p" },
+              args = { "-reuse-instance", "%p", "-forward-search", "%f", "%l" },
             },
           },
         },

@@ -19,11 +19,11 @@ return {
         mapping = {
           ['<CR>'] = cmp.mapping.confirm({ select = false }),
 
-          ['<C-n>'] = cmp.mapping(function(fallback)
+          ['<C-j>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              cmp.select_next_item()
+               cmp.select_next_item()
             else
-              fallback()
+               fallback()
             end
           end, { 'i', 's' }),
 
@@ -71,6 +71,13 @@ return {
     vim.g.UltiSnipsExpandTrigger = '<Tab>'
     vim.g.UltiSnipsJumpForwardTrigger = '<Tab>'
     vim.g.UltiSnipsJumpBackwardTrigger = '<S-Tab>'
+
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "markdown",
+      callback = function()
+        vim.cmd("UltiSnipsAddFiletypes markdown.tex")
+      end,
+    })
   end,
 },
 }
