@@ -11,6 +11,7 @@ return {
       vim.treesitter.language.register("latex", { "tex" })
 
       require('nvim-treesitter.install').compilers = { "zig", "gcc", "clang", "cl" }
+      require('nvim-treesitter.install').prefer_git = true
 
       require('nvim-treesitter').install({ "lua", "python", "javascript", "html", "css", "latex", "markdown" }):wait(300000)
 
