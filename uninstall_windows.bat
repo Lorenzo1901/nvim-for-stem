@@ -1,3 +1,3 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0uninstall_windows.ps1'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0windows_uninstall_backend.ps1'"
 pause
