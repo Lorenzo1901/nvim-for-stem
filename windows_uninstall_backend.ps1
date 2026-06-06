@@ -55,10 +55,11 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "`n$MSG_WINGET" -ForegroundColor Yellow
 $packages = @(
     @("Neovim.Neovim", "nvim"),
-    @("GNU.Ripgrep", "rg"),
+    @("BurntSushi.ripgrep.MSVC", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
-    @("Gyan.FFmpeg", "ffmpeg")
+    @("Gyan.FFmpeg", "ffmpeg"),
+    @("junegunn.fzf", "fzf")
 )
 
 $pkgNames = ($packages | ForEach-Object { $_[0] }) -join ', '

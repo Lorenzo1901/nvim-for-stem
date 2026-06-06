@@ -34,10 +34,6 @@ return {
   {
     "junegunn/fzf",
     cmd = { "FZF", "Files", "Buffers", "Lines" },
-    build = function() 
-      vim.fn.system({ "git", "clone", "--depth", "1", "https://github.com/junegunn/fzf.git", "~/.fzf" })
-      vim.fn.system({ "~/.fzf/install" }) 
-    end
   },
   {
     "junegunn/fzf.vim",

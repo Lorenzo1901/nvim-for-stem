@@ -89,12 +89,13 @@ $packages = @(
     @("Git.Git", "git"),
     @("OpenJS.NodeJS", "node"),
     @("Python.Python.3.11", "python"),
-    @("GNU.Ripgrep", "rg"),
+    @("BurntSushi.ripgrep.MSVC", "rg"),
     @("SumatraPDF.SumatraPDF", "SumatraPDF"),
     @("MiKTeX.MiKTeX", "pdflatex"),
     @("Gyan.FFmpeg", "ffmpeg"),
     @("DEVCOM.Lua", "luarocks"),
-    @("StrawberryPerl.StrawberryPerl", "perl")
+    @("StrawberryPerl.StrawberryPerl", "perl"),
+    @("junegunn.fzf", "fzf")
 )
 
 Write-Host "`n$MSG_STEP1" -ForegroundColor Yellow
