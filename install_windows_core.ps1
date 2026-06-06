@@ -117,6 +117,39 @@ foreach ($pkgPair in $packages) {
     }
 }
 
+# Assicurati che SumatraPDF sia nel PATH (l'installer spesso non lo aggiunge)
+$sumatraPaths = @(
+    "$env:LOCALAPPDATA\SumatraPDF",
+    "$env:ProgramFiles\SumatraPDF",
+    "${env:ProgramFiles(x86)}\SumatraPDF"
+)
+foreach ($p in $sumatraPaths) {
+    if (Test-Path "$p\SumatraPDF.exe") {
+        $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        if ($userPath -notlike "*$p*") {
+            [Environment]::SetEnvironmentVariable("Path", "$p;$userPath", "User")
+            Write-Host "- Aggiunto SumatraPDF al PATH utente / Added SumatraPDF to User PATH." -ForegroundColor Green
+        }
+        break
+    }
+}
+
+# Assicurati che Winget Links e MiKTeX siano nel PATH
+$extraPaths = @(
+    "$env:LOCALAPPDATA\Microsoft\WinGet\Links",
+    "$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64"
+)
+foreach ($p in $extraPaths) {
+    if (Test-Path $p) {
+        $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        if ($userPath -notlike "*$p*") {
+            [Environment]::SetEnvironmentVariable("Path", "$p;$userPath", "User")
+            Write-Host "- Aggiunto $p al PATH utente / Added $p to User PATH." -ForegroundColor Green
+        }
+    }
+}
+
+
 Write-Host "`n$MSG_MSVC" -ForegroundColor Yellow
 $msvcFound = $false
 $msvcPaths = @(
@@ -266,17 +299,14 @@ foreach ($pyPkg in $pyPackages) {
 }
 
 if (Get-Command npm -ErrorAction SilentlyContinue) {
-    if (Get-Command pyright -ErrorAction SilentlyContinue) {
-        Write-Host "- pyright $MSG_SKIPPED" -ForegroundColor DarkGray
-    } else {
-        Write-Host "`n$MSG_INSTALLING Pyright (LSP)..." -ForegroundColor Yellow
-        npm install -g pyright
-    }
-    if (Get-Command tree-sitter -ErrorAction SilentlyContinue) {
-        Write-Host "- tree-sitter $MSG_SKIPPED" -ForegroundColor DarkGray
-    } else {
-        Write-Host "`n$MSG_INSTALLING tree-sitter-cli..." -ForegroundColor Yellow
-        npm install -g tree-sitter-cli
+    $npmPackages = @("pyright", "tree-sitter-cli", "yarn", "neovim")
+    foreach ($pkg in $npmPackages) {
+        if (Get-Command $pkg -ErrorAction SilentlyContinue) {
+            Write-Host "- $pkg $MSG_SKIPPED" -ForegroundColor DarkGray
+        } else {
+            Write-Host "`n$MSG_INSTALLING $pkg..." -ForegroundColor Yellow
+            npm install -g $pkg
+        }
     }
 }
 
@@ -337,5 +367,47 @@ Write-Host $MSG_DONE -ForegroundColor Green
 Write-Host "Assicurati di / Make sure to:"
 Write-Host $MSG_DONE1
 Write-Host $MSG_DONE3
-Write-Host $MSG_DONE4
 Write-Host "========================================" -ForegroundColor Cyan
+
+$termFontPrompt = if ($langChoice -eq "2") { "Vuoi impostare 'RobotoMono Nerd Font' come predefinito per Windows Terminal? [y/n]" } else { "Do you want to set 'RobotoMono Nerd Font' as default for Windows Terminal? [y/n]" }
+while ($true) {
+    $yn = Read-Host "`n$termFontPrompt"
+    if ($yn -match "^[Yy]") {
+        $settingsPaths = @(
+            "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json",
+            "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\LocalState\settings.json"
+        )
+        $updated = $false
+        foreach ($settingsPath in $settingsPaths) {
+            if (Test-Path $settingsPath) {
+                try {
+                    $content = Get-Content $settingsPath -Raw
+                    
+                    # Regex per aggiornare la fontFace all'interno di defaults, o aggiungerla
+                    if ($content -match '"defaults"\s*:\s*\{') {
+                        if ($content -match '("defaults"\s*:\s*\{[^}]*?)"fontFace"\s*:\s*"[^"]*"') {
+                            $content = $content -replace '("defaults"\s*:\s*\{[^}]*?)"fontFace"\s*:\s*"[^"]*"', '$1"fontFace": "RobotoMono Nerd Font"'
+                        } else {
+                            $content = $content -replace '("defaults"\s*:\s*\{)', '$1 "fontFace": "RobotoMono Nerd Font",'
+                        }
+                    } else {
+                        # Inserimento più rozzo se defaults non esiste ma c'è profiles
+                        $content = $content -replace '"profiles"\s*:\s*\{', '"profiles": { "defaults": { "fontFace": "RobotoMono Nerd Font" },'
+                    }
+                    
+                    Set-Content $settingsPath -Value $content -Encoding UTF8
+                    $updated = $true
+                } catch { }
+            }
+        }
+        if ($updated) {
+            Write-Host "- Font di Windows Terminal aggiornato con successo / Windows Terminal font updated successfully." -ForegroundColor Green
+        } else {
+            Write-Host "- File di configurazione di Windows Terminal non trovato / Windows Terminal config file not found." -ForegroundColor Yellow
+        }
+        break
+    }
+    if ($yn -match "^[Nn]") {
+        break
+    }
+}

@@ -61,6 +61,9 @@ $packages = @(
     @("Gyan.FFmpeg", "ffmpeg")
 )
 
+$pkgNames = ($packages | ForEach-Object { $_[0] }) -join ', '
+Write-Host "I seguenti pacchetti verranno richiesti: $pkgNames" -ForegroundColor Cyan
+
 foreach ($pkgPair in $packages) {
     $pkgId = $pkgPair[0]
     if (Ask-Permission "$MSG_PROMPT $pkgId?") {
