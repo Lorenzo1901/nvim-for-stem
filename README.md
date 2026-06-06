@@ -373,11 +373,7 @@ Automated installation scripts are provided for all major operating systems. The
 - **macOS:** Open a terminal and run `bash install_macos.sh`. It uses Homebrew under the hood.
 - **Linux:** Open a terminal and run `bash install_linux.sh`. It automatically detects and supports `apt` (Ubuntu/Debian) and `pacman` (Arch Linux).
 
-> **Important (Font Setup):** The installer downloads and installs the *RobotoMono Nerd Font* on your OS. However, Neovim runs inside your terminal. To see the icons properly, you **must configure your terminal emulator** (Windows Terminal, iTerm2, Kitty, Alacritty, etc.) to use `RobotoMono Nerd Font` as its default font.
-
-After running the script, copy the contents of the respective OS folder (`windows`, `macos`, or `linux`) into your Neovim configuration directory:
-- Windows: `%USERPROFILE%\AppData\Local\nvim\`
-- macOS/Linux: `~/.config/nvim/`
+The script also automatically copies the configuration files to the correct Neovim directory (`~/.config/nvim/` on Linux/macOS, `%USERPROFILE%\AppData\Local\nvim\` on Windows). No manual copy is needed.
 
 #### First Launch
 1. Open Neovim → The custom Dashboard appears.
