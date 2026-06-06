@@ -30,6 +30,8 @@ if ($langChoice -eq "2") {
     $MSG_DOWNLOADING = "Scaricando"
     $MSG_FONT_DONE = "Font installato."
     $MSG_SKIPPED = "Saltato (già installato)"
+    $MSG_SUMATRA_CONFIG = "[+] Configurazione SumatraPDF (Inverse Search)..."
+    $MSG_SUMATRA_DONE = "- Inverse Search impostata per l'uso con neovim-remote."
     $MSG_COPY_CONFIG = "Copia della configurazione di Neovim in ~/AppData/Local/nvim..."
 } else {
     $MSG_TITLE = "Neovim Environment Installer"
@@ -50,6 +52,8 @@ if ($langChoice -eq "2") {
     $MSG_DOWNLOADING = "Downloading"
     $MSG_FONT_DONE = "Font installed."
     $MSG_SKIPPED = "Skipped (already installed)"
+    $MSG_SUMATRA_CONFIG = "[+] Configuring SumatraPDF (Inverse Search)..."
+    $MSG_SUMATRA_DONE = "- Inverse Search configured to use neovim-remote."
     $MSG_COPY_CONFIG = "Copying Neovim configuration to ~/AppData/Local/nvim..."
 }
 
@@ -345,6 +349,28 @@ if (!(Test-Path "$fontDir\RobotoMonoNerdFont-Regular.ttf")) {
 } else {
     Write-Host "- Roboto Mono Nerd Font $MSG_SKIPPED" -ForegroundColor DarkGray
 }
+
+Write-Host "`n$MSG_SUMATRA_CONFIG" -ForegroundColor Yellow
+$sumatraDir = "$env:LOCALAPPDATA\SumatraPDF"
+$sumatraSettings = "$sumatraDir\SumatraPDF-settings.txt"
+$invSearchCmd = 'nvr --remote-silent +"%l" "%f"'
+
+if (!(Test-Path $sumatraDir)) {
+    New-Item -ItemType Directory -Path $sumatraDir -Force | Out-Null
+}
+
+if (Test-Path $sumatraSettings) {
+    $content = Get-Content $sumatraSettings -Raw
+    if ($content -match '(?m)^InverseSearchCmdLine\s*=.*') {
+        $content = $content -replace '(?m)^InverseSearchCmdLine\s*=.*', "InverseSearchCmdLine = $invSearchCmd"
+        Set-Content $sumatraSettings -Value $content -Encoding UTF8
+    } else {
+        Add-Content $sumatraSettings -Value "`nInverseSearchCmdLine = $invSearchCmd" -Encoding UTF8
+    }
+} else {
+    Set-Content $sumatraSettings -Value "InverseSearchCmdLine = $invSearchCmd" -Encoding UTF8
+}
+Write-Host $MSG_SUMATRA_DONE -ForegroundColor Green
 
 Write-Host "`n$MSG_COPY_CONFIG" -ForegroundColor Yellow
 $nvimDir = "$env:USERPROFILE\AppData\Local\nvim"
