@@ -34,11 +34,12 @@ Modern Neovim setup optimized for Windows and Linux, focused on LaTeX writing, P
 
 ### 2. Directory Structure
 
-This repository contains two distinct configuration directories to provide tailored support for both operating systems:
+This repository contains three distinct configuration directories to provide tailored support for all operating systems:
 - `linux/`: Configuration tailored for Linux environments (uses Zathura for PDF viewing, Unix paths, bash/zsh terminals).
 - `windows/`: Configuration tailored for Windows environments (uses SumatraPDF for PDF viewing, Windows paths).
+- `macos/`: Configuration tailored for macOS environments (uses Skim for PDF viewing, Unix paths, bash/zsh terminals).
 
-> **Note**: Both configurations are kept completely identical in terms of plugins, shortcuts, and features (including advanced Markdown preview, Treesitter syntax, and Python debugging). The only differences between the two are the absolute file paths and the PDF viewer setup.
+> **Note**: All configurations are kept completely identical in terms of plugins, shortcuts, and features (including advanced Markdown preview, Treesitter syntax, and Python debugging). The only differences between them are the absolute file paths and the PDF viewer setup.
 
 ---
 
@@ -203,7 +204,8 @@ These shortcuts apply to the currently selected text without losing the visual s
 - LaTeX distribution (TeX Live / MiKTeX)
 - **Linux:** Zathura PDF viewer
 - **Windows:** SumatraPDF viewer
-- Texlab LSP: `cargo install texlab`
+- **macOS:** Skim PDF viewer
+- Texlab LSP: installed via automatic scripts (`cargo` / `brew` / `winget`)
 
 **Features:**
 - Auto-save and compile via `latexmk`.
@@ -384,7 +386,7 @@ The script also automatically copies the configuration files to the correct Neov
 1. Create a `.tex` file.
 2. Write content. The file automatically saves every 3 seconds.
 3. Use `Ctrl-O` to force a compilation if needed.
-4. The configured PDF viewer (Zathura/Sumatra) will open and sync with your cursor location.
+4. The configured PDF viewer (Zathura/Sumatra/Skim) will open and sync with your cursor location.
 5. Highlight text in Visual Mode and use `Alt-B` / `Alt-I` for bold/italic formatting, or `$` for math mode.
 
 #### Python Development
@@ -408,6 +410,7 @@ The script also automatically copies the configuration files to the correct Neov
 Depending on your OS, edit your configuration in the respective folder:
 - **Linux:** `linux/init.lua`
 - **Windows:** `windows/init.lua` (often linked to `C:/Users/Lorenzo/AppData/Local/nvim/init.lua`)
+- **macOS:** `macos/init.lua`
 
 **Common Modifications:**
 - Change the leader key: `lua/config/options.lua` -> `vim.g.mapleader`

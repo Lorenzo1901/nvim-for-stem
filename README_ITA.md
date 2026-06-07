@@ -34,11 +34,12 @@ Configurazione moderna per Neovim ottimizzata per Windows e Linux, focalizzata s
 
 ### 2. Struttura delle Cartelle
 
-Questa repository contiene due cartelle di configurazione distinte per fornire un supporto su misura per entrambi i sistemi operativi:
+Questa repository contiene tre cartelle di configurazione distinte per fornire un supporto su misura per tutti i sistemi operativi:
 - `linux/`: Configurazione pensata per gli ambienti Linux (usa Zathura per la visualizzazione PDF, percorsi Unix, terminali bash/zsh).
 - `windows/`: Configurazione pensata per gli ambienti Windows (usa SumatraPDF per la visualizzazione PDF, percorsi Windows).
+- `macos/`: Configurazione pensata per gli ambienti macOS (usa Skim per la visualizzazione PDF, percorsi Unix, terminali bash/zsh).
 
-> **Nota**: Entrambe le configurazioni sono mantenute completamente identiche per quanto riguarda plugin, scorciatoie e funzionalità (incluse l'anteprima avanzata di Markdown, la sintassi Treesitter e il debug in Python). Le uniche differenze tra le due riguardano i percorsi assoluti dei file e la configurazione del visualizzatore PDF.
+> **Nota**: Tutte le configurazioni sono mantenute completamente identiche per quanto riguarda plugin, scorciatoie e funzionalità (incluse l'anteprima avanzata di Markdown, la sintassi Treesitter e il debug in Python). Le uniche differenze tra di esse riguardano i percorsi assoluti dei file e la configurazione del visualizzatore PDF.
 
 ---
 
@@ -203,6 +204,7 @@ Queste scorciatoie si applicano al testo attualmente selezionato senza perdere l
 - Distribuzione LaTeX (TeX Live / MiKTeX)
 - **Linux:** Visualizzatore PDF Zathura
 - **Windows:** Visualizzatore PDF SumatraPDF
+- **macOS:** Visualizzatore PDF Skim
 - Texlab LSP: installato tramite script automatici (`cargo` / `brew` / `winget`)
 
 **Funzionalità:**
